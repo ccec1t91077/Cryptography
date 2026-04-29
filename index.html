@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>密碼加密工具</title>
+    <link href="fonts/fonts.css" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f5f5f7;
+            --surface: #ffffff;
+            --surface2: #f9f9fb;
+            --border: #e2e2e7;
+            --border-focus: #0c6ef2;
+            --accent: #0c6ef2;
+            --accent-hover: #0a5ed4;
+            --text-primary: #1a1523;
+            --text-secondary: #5c5973;
+            --text-muted: #9b98ab;
+            --mono: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
+            --sans: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
+            --result-color: #0c6ef2;
+            --step-bg: #f0f4ff;
+            --step-border: #c3d4f8;
+            --step-color: #0c6ef2;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            font-family: var(--sans);
+            color: var(--text-primary);
+            padding: 40px 24px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 272px 1fr 256px;
+            gap: 20px;
+            width: 100%;
+            max-width: 1160px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-card);
+        }
+
+        .panel-head {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-head-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .panel-head-icon.blue { background: #edf3ff; }
+        .panel-head-icon.indigo { background: #f0eeff; }
+        .panel-head-icon.teal { background: #e6f7f4; }
+
+        .panel-head h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .panel-body { padding: 22px 24px; }
+
+        .info-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-step:last-child { margin-bottom: 0; }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--step-bg);
+            border: 1px solid var(--step-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--step-color);
+            margin-top: 1px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        .step-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card-icon-wrap {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        .card-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            background: #edf3ff;
+            border: 1px solid #c3d4f8;
+            border-radius: 14px;
+            font-size: 22px;
+            margin-bottom: 13px;
+        }
+
+        .card-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            letter-spacing: -0.02em;
+        }
+
+        .card-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+            margin-bottom: 7px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-size: 14px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            font-family: var(--mono);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(12,110,242,0.12);
+        }
+
+        input[type="text"]:hover:not(:focus),
+        input[type="password"]:hover:not(:focus),
+        input[type="number"]:hover:not(:focus) {
+            border-color: #bbbbc8;
+        }
+
+        input[type="text"]:disabled,
+        input[type="password"]:disabled,
+        input[type="number"]:disabled {
+            background: var(--surface2);
+            border-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .custom-select.is-disabled .custom-select-trigger {
+            background: var(--surface2);
+            border-color: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        input::placeholder { color: var(--text-muted); }
+
+        .custom-select {
+            position: relative;
+            user-select: none;
+        }
+
+        .custom-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: var(--mono);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: #bbbbc8;
+        }
+
+        .custom-select.is-open .custom-select-trigger {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(12,110,242,0.12);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .custom-select-trigger svg {
+            flex-shrink: 0;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .custom-select.is-open .custom-select-trigger svg {
+            transform: rotate(180deg);
+        }
+
+        .custom-select-value {
+            color: var(--text-muted);
+        }
+
+        .custom-select-value.has-value {
+            color: var(--text-primary);
+        }
+
+        .custom-select-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border-focus);
+            border-top: none;
+            border-bottom-left-radius: var(--radius-sm);
+            border-bottom-right-radius: var(--radius-sm);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 200;
+        }
+
+        .custom-select.is-open .custom-select-dropdown {
+            display: block;
+        }
+
+        .custom-select-option {
+            padding: 9px 14px;
+            font-size: 13px;
+            font-family: var(--mono);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background 0.1s, color 0.1s;
+        }
+
+        .custom-select-option:hover {
+            background: var(--surface2);
+            color: var(--text-primary);
+        }
+
+        .custom-select-option.is-selected {
+            background: #edf3ff;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .optional-tag {
+            font-size: 10px;
+            padding: 2px 7px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .hint-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .hint-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: var(--sans);
+            color: var(--text-muted);
+            cursor: default;
+            line-height: 1;
+            font-style: normal;
+            flex-shrink: 0;
+            user-select: none;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            overflow: hidden;
+            text-indent: -9999px;
+        }
+
+        .hint-icon::after {
+            content: '?';
+            text-indent: 0;
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1;
+            margin-top: 1px;
+        }
+
+        .hint-icon.clickable {
+            cursor: pointer;
+        }
+
+        .hint-wrap:hover .hint-icon {
+            background: #edf3ff;
+            border-color: #c3d4f8;
+            color: var(--accent);
+        }
+
+        .hint-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.55;
+            padding: 8px 12px;
+            border-radius: 7px;
+            width: 220px;
+            white-space: normal;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 100;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .hint-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--text-primary);
+        }
+
+        .hint-wrap:hover .hint-tooltip {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--sans);
+            letter-spacing: -0.01em;
+            transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+            margin-top: 4px;
+            box-shadow: 0 1px 3px rgba(12,110,242,0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 2px 6px rgba(12,110,242,0.3);
+        }
+
+        .btn-primary:active { transform: scale(0.985); }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+        .result-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+            margin-bottom: 8px;
+        }
+
+        .result-box {
+            position: relative;
+            background: #f0f5ff;
+            border: 1px solid #c3d4f8;
+            border-radius: var(--radius-sm);
+            padding: 13px 52px 13px 14px;
+            font-size: 13px;
+            font-family: var(--mono);
+            color: var(--result-color);
+            word-break: break-all;
+            line-height: 1.7;
+            min-height: 50px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent);
+            border-color: #c3d4f8;
+            background: #edf3ff;
+        }
+
+        .auto-fill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+        }
+
+        .auto-fill-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auto-fill-item input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .result-hints {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .result-hint-tag {
+            font-size: 11px;
+            font-family: var(--sans);
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #fff8e6;
+            border: 1px solid #f5d87a;
+            color: #8a6200;
+        }
+
+        .rule-item {
+            margin-bottom: 18px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rule-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .rule-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: var(--mono);
+            margin-bottom: 0;
+            letter-spacing: -0.01em;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .rule-name-label {
+            font-size: 14px;
+            font-weight: 700;
+            font-family: var(--sans);
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            margin-bottom: 0;
+        }
+
+        .rule-num {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.04em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rule-num::before {
+            content: 'Plan Code';
+            font-size: 9px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            letter-spacing: 0.03em;
+        }
+
+        .rule-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .rule-details { list-style: none; }
+
+        .rule-details.is-open .hint-icon,
+        .hint-icon.clickable:hover {
+            background: #edf3ff;
+            border-color: #c3d4f8;
+            color: var(--accent);
+        }
+
+        .rule-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: default;
+            list-style: none;
+        }
+
+        .rule-summary::-webkit-details-marker { display: none; }
+
+        .rule-expand-wrap {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.28s ease;
+        }
+
+        .rule-details.is-open .rule-expand-wrap {
+            grid-template-rows: 1fr;
+        }
+
+        .rule-expand-inner {
+            overflow: hidden;
+        }
+
+        .rule-expand {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rule-expand .rule-desc {
+            margin: 0;
+        }
+
+        .form-group.rule-input {
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .symbol-group {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+        }
+
+        .symbol-toggle-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .symbol-toggle-all {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 3px 10px;
+            cursor: pointer;
+            font-family: var(--sans);
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .symbol-toggle-all input[type="checkbox"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .symbol-toggle-all:hover {
+            border-color: #c3d4f8;
+            color: var(--accent);
+            background: #edf3ff;
+        }
+
+        .symbol-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .symbol-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+        }
+
+        .symbol-chip input[type="checkbox"] {
+            display: none;
+        }
+
+        .symbol-chip:has(input:checked) {
+            background: #edf3ff;
+            border-color: #c3d4f8;
+            color: var(--accent);
+        }
+
+        .symbol-chip:hover {
+            border-color: #c3d4f8;
+            color: var(--accent);
+        }
+
+        .hill-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 7px;
+        }
+
+        .range-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+
+        .range-label-row .form-label {
+            margin-bottom: 0;
+        }
+
+        .range-output {
+            font-size: 12px;
+            font-weight: 700;
+            font-family: var(--mono);
+            color: var(--accent);
+            background: #edf3ff;
+            border: 1px solid #c3d4f8;
+            border-radius: 5px;
+            padding: 1px 8px;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill, 11.11%), var(--border) var(--fill, 11.11%));
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(12,110,242,0.3);
+            cursor: pointer;
+            transition: box-shadow 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 0 4px rgba(12,110,242,0.15);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(12,110,242,0.3);
+            cursor: pointer;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrap input {
+            padding-right: 40px;
+        }
+
+        .input-action-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s;
+        }
+
+        .input-action-btn:hover {
+            color: var(--accent);
+        }
+
+        .input-action-btn .eye-off-icon { display: none; }
+        .input-action-btn.is-visible .eye-icon { display: none; }
+        .input-action-btn.is-visible .eye-off-icon { display: block; }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+                max-width: 560px;
+            }
+        }
+
+        .app-version {
+            position: fixed;
+            bottom: 16px;
+            right: 20px;
+            font-size: 11px;
+            font-family: var(--mono);
+            color: var(--text-muted);
+            user-select: none;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        .first-use-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .first-use-modal.is-visible {
+            display: flex;
+        }
+
+        .first-use-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(26, 21, 35, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .first-use-content {
+            position: relative;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-card);
+            padding: 32px 28px;
+            max-width: 400px;
+            width: calc(100% - 48px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .first-use-icon {
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .first-use-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            letter-spacing: -0.01em;
+        }
+
+        .first-use-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .first-use-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .first-use-list li strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .first-use-list-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e6f7f0;
+            border: 1px solid #b3e5d0;
+            color: #0a7a50;
+            font-size: 10px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+        }
+
+        .first-use-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .first-use-note svg {
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: var(--text-muted);
+        }
+
+        .first-use-btn {
+            margin-top: 4px;
+            width: 100%;
+            padding: 10px 20px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--sans);
+            transition: background 0.15s;
+        }
+
+        .first-use-btn:hover {
+            background: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-head-icon blue">📖</div>
+                <h2>使用說明</h2>
+            </div>
+            <div class="panel-body">
+                <div class="info-step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">在右側選擇<strong>加密規則</strong>並填入參數。Plan Code 中的數字對應規則編號，可填入多個數字依序套用，例如 <strong>131</strong> 代表凱薩 → 維吉尼亞 → 凱薩。</div>
+                </div>
+                <div class="info-step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">輸入 <strong>Plan Code</strong>，這是每個帳號的唯一識別碼，可自由組合文字與規則編號。</div>
+                </div>
+                <div class="info-step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。</div>
+                </div>
+                <div class="info-step">
+                    <div class="step-num">4</div>
+                    <div class="step-text">視需要填入 <strong>Salt</strong>、調整<strong>特殊符號</strong>、<strong>密碼長度</strong>與<strong>自動補充字元</strong>選項。</div>
+                </div>
+                <div class="info-step">
+                    <div class="step-num">5</div>
+                    <div class="step-text">點擊按鈕產生<strong>加密密碼</strong>，複製後用於網站登入。</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-head-icon indigo">🔐</div>
+                <h2>密碼加密工具</h2>
+            </div>
+            <div class="panel-body">
+                <div class="card-icon-wrap">
+                    <div class="card-icon">🔒</div>
+                    <div class="card-title">產生登入密碼</div>
+                    <div class="card-sub">將明文密碼加密成實際用於登入的強密碼</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="enc-plancode">Plan code</label>
+                    <input type="text" id="enc-plancode" placeholder="輸入 Plan Code" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="enc-plain">Password</label>
+                    <div class="input-wrap">
+                        <input type="password" id="enc-plain" class="mono" placeholder="例如：mydog2024" autocomplete="off" />
+                        <button class="input-action-btn" id="toggle-password" type="button" title="顯示密碼">
+                            <svg class="eye-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="eye-off-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="enc-salt">
+                        Salt
+                        <span class="optional-tag">選填</span>
+                        <span class="hint-wrap">
+                            <span class="hint-icon"></span>
+                            <span class="hint-tooltip">加鹽值可增加密碼複雜度與安全性，可留空或輸入任意字串。</span>
+                        </span>
+                    </label>
+                    <input type="text" id="enc-salt" placeholder="例如：randomsalt123" autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        密碼含特殊符號
+                        <span class="hint-wrap">
+                            <span class="hint-icon"></span>
+                            <span class="hint-tooltip">勾選允許出現在加密結果中的特殊符號，取消勾選的符號將被排除。</span>
+                        </span>
+                    </label>
+                    <div class="symbol-group">
+                        <div class="symbol-toggle-row">
+                            <label class="symbol-toggle-all">
+                                <input type="checkbox" id="symbol-select-all" checked>全選
+                            </label>
+                        </div>
+                        <div class="symbol-grid">
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="!" checked><span>!</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="@" checked><span>@</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="#" checked><span>#</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="$" checked><span>$</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="%" checked><span>%</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="^" checked><span>^</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="&" checked><span>&amp;</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="*" checked><span>*</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="-" checked><span>-</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="_" checked><span>_</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="+" checked><span>+</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="=" checked><span>=</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="." checked><span>.</span></label>
+                            <label class="symbol-chip"><input type="checkbox" name="symbol" value="?" checked><span>?</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="range-label-row">
+                        <label class="form-label" for="enc-length">密碼長度</label>
+                        <output class="range-output" for="enc-length">8</output>
+                    </div>
+                    <input type="range" id="enc-length" min="6" max="24" value="8" step="1" />
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label">
+                        自動補充字元
+                        <span class="hint-wrap">
+                            <span class="hint-icon"></span>
+                            <span class="hint-tooltip">勾選後，若產生的密碼缺少該類型字元，將自動替換密碼中的部分字元以確保包含。</span>
+                        </span>
+                    </div>
+                    <div class="auto-fill-group">
+                        <label class="auto-fill-item">
+                            <input type="checkbox" id="auto-upper" checked />
+                            <span>大寫英文字母</span>
+                        </label>
+                        <label class="auto-fill-item">
+                            <input type="checkbox" id="auto-lower" checked />
+                            <span>小寫英文字母</span>
+                        </label>
+                        <label class="auto-fill-item">
+                            <input type="checkbox" id="auto-digit" checked />
+                            <span>數字</span>
+                        </label>
+                        <label class="auto-fill-item">
+                            <input type="checkbox" id="auto-symbol" checked />
+                            <span>特殊符號</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn-primary" type="button">🔒 產生登入用密碼</button>
+
+                <div>
+                    <hr class="divider" />
+                    <div class="result-label">加密後的登入密碼</div>
+                    <div class="result-box">
+                        <button class="copy-btn" type="button" title="複製">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        </button>
+                        <span></span>
+                    </div>
+                    <div class="result-hints" id="result-hints"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
+                <div class="panel-head-icon teal">⚙️</div>
+                <h2>加密規則</h2>
+            </div>
+            <div class="panel-body">
+                <div class="rule-item">
+                    <details class="rule-details">
+                        <summary class="rule-summary">
+                            <div>
+                                <div class="rule-name">
+                                    <span class="rule-num">1</span>
+                                    <label class="form-label rule-name-label">凱薩密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="rule-expand-wrap">
+                            <div class="rule-expand-inner">
+                                <div class="rule-expand">
+                                    <p class="rule-desc">最基本的加密方式，將密碼中的每個字元在字元表上往後移動固定的距離。位移量決定移動幾格，數字越大結果越難猜。（位移量可為負數）</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="form-group rule-input">
+                        <label class="form-label" for="rule-shift">位移量</label>
+                        <input type="number" id="rule-shift" placeholder="例如：3" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <details class="rule-details">
+                        <summary class="rule-summary">
+                            <div>
+                                <div class="rule-name">
+                                    <span class="rule-num">2</span>
+                                    <label class="form-label rule-name-label">仿射密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="rule-expand-wrap">
+                            <div class="rule-expand-inner">
+                                <div class="rule-expand">
+                                    <p class="rule-desc">透過兩個數字對密碼進行雙重混淆，讓加密結果比單純位移更難被猜測。<br><br>乘數決定字元跳躍的幅度，位移量決定起始偏移的距離，兩者搭配使用讓每個字元的變換更加複雜。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="form-group rule-input">
+                        <label class="form-label" for="rule-affine-a">乘數 a</label>
+                        <input type="hidden" id="rule-affine-a" />
+                        <div class="custom-select" id="rule-affine-a-select">
+                            <div class="custom-select-trigger">
+                                <span class="custom-select-value">—</span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                            <div class="custom-select-dropdown"></div>
+                        </div>
+                    </div>
+                    <div class="form-group rule-input">
+                        <label class="form-label" for="rule-affine-b">位移量 b</label>
+                        <input type="number" id="rule-affine-b" placeholder="例如：8" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <details class="rule-details">
+                        <summary class="rule-summary">
+                            <div>
+                                <div class="rule-name">
+                                    <span class="rule-num">3</span>
+                                    <label class="form-label rule-name-label">維吉尼亞密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="rule-expand-wrap">
+                            <div class="rule-expand-inner">
+                                <div class="rule-expand">
+                                    <p class="rule-desc">使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="form-group rule-input">
+                        <label class="form-label" for="rule-vigenere-key">金鑰</label>
+                        <input type="text" id="rule-vigenere-key" class="mono" placeholder="例如：SECRET" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <details class="rule-details">
+                        <summary class="rule-summary">
+                            <div>
+                                <div class="rule-name">
+                                    <span class="rule-num">4</span>
+                                    <label class="form-label rule-name-label">波雷費密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="rule-expand-wrap">
+                            <div class="rule-expand-inner">
+                                <div class="rule-expand">
+                                    <p class="rule-desc">透過一組關鍵字將字元打亂成一張對照表，再以兩個字元為一組進行替換。關鍵字決定對照表的排列方式，不同的關鍵字會產生完全不同的加密結果。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="form-group rule-input">
+                        <label class="form-label" for="rule-playfair-key">關鍵字</label>
+                        <input type="text" id="rule-playfair-key" class="mono" placeholder="例如：KEYWORD" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="rule-item">
+                    <details class="rule-details">
+                        <summary class="rule-summary">
+                            <div>
+                                <div class="rule-name">
+                                    <span class="rule-num">5</span>
+                                    <label class="form-label rule-name-label">希爾密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="rule-expand-wrap">
+                            <div class="rule-expand-inner">
+                                <div class="rule-expand">
+                                    <p class="rule-desc">使用四個數字組成的金鑰，將密碼中的字元兩兩一組進行混合運算，讓每對字元互相影響彼此的加密結果，難以單獨還原。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="form-group rule-input">
+                        <div class="form-label">金鑰矩陣（2×2）</div>
+                        <div class="hill-matrix">
+                            <input type="number" id="rule-hill-a" placeholder="a" autocomplete="off" />
+                            <input type="number" id="rule-hill-b" placeholder="b" autocomplete="off" />
+                            <input type="number" id="rule-hill-c" placeholder="c" autocomplete="off" />
+                            <input type="number" id="rule-hill-d" placeholder="d" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="app-version">v1.0.0<br>© 2026 ccec1t91077</div>
+
+    <div class="first-use-modal" id="first-use-modal">
+        <div class="first-use-overlay"></div>
+        <div class="first-use-content">
+            <div class="first-use-icon">🔒</div>
+            <h3 class="first-use-title">使用前說明</h3>
+            <ul class="first-use-list">
+                <li>
+                    <span class="first-use-list-icon">✓</span>
+                    <span>所有加密運算<strong>在瀏覽器本地執行</strong>，不會傳輸任何資料至外部</span>
+                </li>
+                <li>
+                    <span class="first-use-list-icon">✓</span>
+                    <span>所有密碼相關的輸入<strong>不會被保留</strong>，關閉頁面即消失</span>
+                </li>
+                <li>
+                    <span class="first-use-list-icon">✓</span>
+                    <span>相同的輸入與設定每次都會產出<strong>相同結果</strong>，可隨時重新產生密碼</span>
+                </li>
+                <li>
+                    <span class="first-use-list-icon">✓</span>
+                    <span>此工具為純靜態頁面，<strong>無後端伺服器</strong></span>
+                </li>
+            </ul>
+            <div class="first-use-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>規則參數等偏好設定會儲存於瀏覽器的 localStorage。如需清除，請透過瀏覽器的「清除網站資料」功能。</span>
+            </div>
+            <button class="first-use-btn" id="first-use-close">知道了</button>
+        </div>
+    </div>
+
+    <script>
+        // ── StorageManager ──────────────────────────────────────────
+        const StorageManager = (() => {
+            // 以當前 URL（origin + pathname）產生穩定的 hash key
+            function _genKey(url) {
+                let hash = 0;
+                for (let i = 0; i < url.length; i++) {
+                    hash = (hash * 31 + url.charCodeAt(i)) >>> 0;
+                }
+                return `pwd-tool_${hash.toString(16)}`;
+            }
+
+            const _key = _genKey(location.origin + location.pathname);
+            let _store = {};
+
+            function _isValidJSON(str) {
+                try {
+                    const parsed = JSON.parse(str);
+                    return parsed !== null && typeof parsed === 'object';
+                } catch {
+                    return false;
+                }
+            }
+
+            function init() {
+                const raw = localStorage.getItem(_key);
+                if (raw !== null) {
+                    if (_isValidJSON(raw)) {
+                        _store = JSON.parse(raw);
+                        console.info('[StorageManager] 已載入儲存資料', _store);
+                    } else {
+                        console.warn('[StorageManager] 資料損毀，重置為空物件');
+                        _store = {};
+                        _persist();
+                    }
+                } else {
+                    console.info('[StorageManager] 無儲存資料，初始化空物件');
+                    _store = {};
+                    _persist();
+                }
+            }
+
+            function _persist() {
+                localStorage.setItem(_key, JSON.stringify(_store));
+            }
+
+            function get(path, fallback = undefined) {
+                const keys = path.split('.');
+                let cur = _store;
+                for (const k of keys) {
+                    if (cur == null || typeof cur !== 'object') return fallback;
+                    cur = cur[k];
+                }
+                return cur !== undefined ? cur : fallback;
+            }
+
+            function set(path, value) {
+                const keys = path.split('.');
+                let cur = _store;
+                for (let i = 0; i < keys.length - 1; i++) {
+                    if (cur[keys[i]] == null || typeof cur[keys[i]] !== 'object') {
+                        cur[keys[i]] = {};
+                    }
+                    cur = cur[keys[i]];
+                }
+                cur[keys[keys.length - 1]] = value;
+                _persist();
+            }
+
+            return { init, get, set };
+        })();
+
+        StorageManager.init();
+
+        // ── 從 localStorage 還原使用者設定 ──────────────────────────
+        (() => {
+            // 特殊符號
+            const savedSymbols = StorageManager.get('prefs.symbols');
+            if (savedSymbols !== undefined) {
+                document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => {
+                    c.checked = savedSymbols.includes(c.value);
+                });
+                const all = document.querySelectorAll('.symbol-chip input[type="checkbox"]');
+                const selectAll = document.getElementById('symbol-select-all');
+                selectAll.checked = [...all].every(c => c.checked);
+                selectAll.indeterminate = !selectAll.checked && [...all].some(c => c.checked);
+            }
+
+            // 凱薩密碼位移量
+            const savedShift = StorageManager.get('prefs.caesar.shift');
+            if (savedShift !== undefined) {
+                document.getElementById('rule-shift').value = savedShift;
+            }
+
+            // 仿射密碼位移量 b
+            const savedAffineB = StorageManager.get('prefs.affine.b');
+            if (savedAffineB !== undefined) {
+                document.getElementById('rule-affine-b').value = savedAffineB;
+            }
+
+            // 仿射密碼乘數 a（傳給 populateSelect 使用）
+            window._savedAffineA = StorageManager.get('prefs.affine.a', '');
+
+            // 維吉尼亞金鑰
+            const savedVigenereKey = StorageManager.get('prefs.vigenere.key');
+            if (savedVigenereKey !== undefined) {
+                document.getElementById('rule-vigenere-key').value = savedVigenereKey;
+            }
+
+            // 波雷費關鍵字
+            const savedPlayfairKey = StorageManager.get('prefs.playfair.key');
+            if (savedPlayfairKey !== undefined) {
+                document.getElementById('rule-playfair-key').value = savedPlayfairKey;
+            }
+
+            // 希爾密碼金鑰矩陣
+            const hillKeys = StorageManager.get('prefs.hill');
+            if (hillKeys !== undefined) {
+                ['a','b','c','d'].forEach(k => {
+                    if (hillKeys[k] !== undefined)
+                        document.getElementById(`rule-hill-${k}`).value = hillKeys[k];
+                });
+            }
+            // Plan Code
+            const savedPlanCode = StorageManager.get('session.planCode');
+            if (savedPlanCode !== undefined) {
+                document.getElementById('enc-plancode').value = savedPlanCode;
+            }
+
+            // 密碼長度
+            const savedLength = StorageManager.get('prefs.length');
+            if (savedLength !== undefined) {
+                document.getElementById('enc-length').value = savedLength;
+            }
+
+            // 自動補充字元
+            const savedAutoFill = StorageManager.get('prefs.autoFill');
+            if (savedAutoFill !== undefined) {
+                ['upper','lower','digit','symbol'].forEach(k => {
+                    document.getElementById(`auto-${k}`).checked = savedAutoFill[k] ?? false;
+                });
+            }
+        })();
+
+        // ── FirstUseNotice ───────────────────────────────────────────
+        const FirstUseNotice = (() => {
+            const modal   = document.getElementById('first-use-modal');
+            const closeBtn = document.getElementById('first-use-close');
+
+            function show() {
+                modal.classList.add('is-visible');
+                StorageManager.set('flags.firstUseSeen', true);
+            }
+
+            function init() {
+                closeBtn.addEventListener('click', () => modal.classList.remove('is-visible'));
+                modal.querySelector('.first-use-overlay').addEventListener('click', () => modal.classList.remove('is-visible'));
+            }
+
+            return { show, init };
+        })();
+
+        FirstUseNotice.init();
+        // ────────────────────────────────────────────────────────────        // ────────────────────────────────────────────────────────────
+
+        // ── PasswordVisibility ───────────────────────────────────────
+        const PasswordVisibility = (() => {
+            const btn   = document.getElementById('toggle-password');
+            const input = document.getElementById('enc-plain');
+
+            function _apply(visible) {
+                input.type = visible ? 'text' : 'password';
+                btn.classList.toggle('is-visible', visible);
+            }
+
+            function init() {
+                const saved = StorageManager.get('prefs.showPassword', false);
+                _apply(saved);
+                btn.addEventListener('click', () => {
+                    const next = input.type === 'password';
+                    _apply(next);
+                    StorageManager.set('prefs.showPassword', next);
+                });
+            }
+
+            return { init };
+        })();
+
+        PasswordVisibility.init();
+        // ────────────────────────────────────────────────────────────
+
+        // ── CharsetManager ──────────────────────────────────────────
+        const CharsetManager = (() => {
+            const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const DIGITS = '0123456789';
+            const LOWER = 'abcdefghijklmnopqrstuvwxyz';
+
+            function _getCheckedSymbols() {
+                return [...document.querySelectorAll('.symbol-chip input[type="checkbox"]:checked')]
+                    .map(el => el.value)
+                    .join('');
+            }
+
+            function get() {
+                return UPPER + DIGITS + LOWER + _getCheckedSymbols();
+            }
+
+            return { get };
+        })();
+        // ────────────────────────────────────────────────────────────
+        // 全選聯動
+        const selectAll = document.getElementById('symbol-select-all');
+        const chips = document.querySelectorAll('.symbol-chip input[type="checkbox"]');
+
+        function _saveSymbols() {
+            const checked = [...chips].filter(c => c.checked).map(c => c.value);
+            StorageManager.set('prefs.symbols', checked);
+            if (typeof AffineCipher !== 'undefined') AffineCipher.populateSelect();
+        }
+        selectAll.addEventListener('change', () => {
+            chips.forEach(c => c.checked = selectAll.checked);
+            _saveSymbols();
+        });
+        chips.forEach(c => c.addEventListener('change', () => {
+            selectAll.checked = [...chips].every(c => c.checked);
+            selectAll.indeterminate = !selectAll.checked && [...chips].some(c => c.checked);
+            _saveSymbols();
+        }));
+
+        // 密碼長度 range
+        const lengthInput = document.getElementById('enc-length');
+        const lengthOutput = document.querySelector('output[for="enc-length"]');
+        function _updateRange() {
+            const val  = parseInt(lengthInput.value);
+            const min  = parseInt(lengthInput.min);
+            const max  = parseInt(lengthInput.max);
+            const fill = ((val - min) / (max - min) * 100).toFixed(2) + '%';
+            lengthInput.style.setProperty('--fill', fill);
+            lengthOutput.textContent = val;
+            StorageManager.set('prefs.length', val);
+        }
+        lengthInput.addEventListener('input', _updateRange);
+        _updateRange();
+
+        // ── CaesarCipher ─────────────────────────────────────────────
+        const CaesarCipher = (() => {
+            // 在 charset 內對字元做位移，不在 charset 內的字元原樣保留
+            function _shiftChar(char, shift, charset) {
+                const idx = charset.indexOf(char);
+                if (idx === -1) return char;
+                return charset[(idx + shift) % charset.length];
+            }
+
+            function encrypt(plaintext, shift, charset) {
+                const s = ((shift % charset.length) + charset.length) % charset.length;
+                return plaintext.split('').map(c => _shiftChar(c, s, charset)).join('');
+            }
+
+            return { encrypt };
+        })();
+        // ────────────────────────────────────────────────────────────
+
+        // ── AffineCipher ─────────────────────────────────────────────
+        const AffineCipher = (() => {
+            function _gcd(a, b) {
+                return b === 0 ? a : _gcd(b, a % b);
+            }
+
+            function encrypt(plaintext, a, b, charset) {
+                const m = charset.length;
+                a = ((a % m) + m) % m;
+                b = ((b % m) + m) % m;
+                return plaintext.split('').map(c => {
+                    const x = charset.indexOf(c);
+                    if (x === -1) return c;
+                    return charset[(a * x + b) % m];
+                }).join('');
+            }
+
+            function populateSelect(prevValue) {
+                const hidden   = document.getElementById('rule-affine-a');
+                const wrap     = document.getElementById('rule-affine-a-select');
+                const valEl    = wrap.querySelector('.custom-select-value');
+                const dropdown = wrap.querySelector('.custom-select-dropdown');
+                const prev     = prevValue !== undefined ? prevValue : hidden.value;
+
+                dropdown.innerHTML = '';
+                wrap.classList.remove('is-disabled');
+
+                const m = CharsetManager.get().length;
+                let firstVal = null;
+                for (let a = 1; a < m; a++) {
+                    if (_gcd(a, m) !== 1) continue;
+                    if (!firstVal) firstVal = String(a);
+                    const opt = document.createElement('div');
+                    opt.className = 'custom-select-option' + (String(a) === prev ? ' is-selected' : '');
+                    opt.textContent = a;
+                    opt.dataset.value = a;
+                    opt.addEventListener('click', () => {
+                        hidden.value = a;
+                        valEl.textContent = a;
+                        valEl.classList.add('has-value');
+                        dropdown.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('is-selected'));
+                        opt.classList.add('is-selected');
+                        wrap.classList.remove('is-open');
+                        StorageManager.set('prefs.affine.a', String(a));
+                    });
+                    dropdown.appendChild(opt);
+                }
+
+                if (prev && [...dropdown.children].some(o => o.dataset.value === prev)) {
+                    valEl.textContent = prev;
+                    valEl.classList.add('has-value');
+                } else {
+                    hidden.value = firstVal || '';
+                    valEl.textContent = firstVal || '—';
+                    if (firstVal) valEl.classList.add('has-value');
+                }
+            }
+
+            return { encrypt, populateSelect };
+        })();
+
+        AffineCipher.populateSelect(window._savedAffineA);
+        delete window._savedAffineA;
+
+        // custom-select 開關
+        document.getElementById('rule-affine-a-select').querySelector('.custom-select-trigger')
+            .addEventListener('click', () => {
+                document.getElementById('rule-affine-a-select').classList.toggle('is-open');
+            });
+        document.addEventListener('click', e => {
+            const wrap = document.getElementById('rule-affine-a-select');
+            if (!wrap.contains(e.target)) wrap.classList.remove('is-open');
+        });
+        // ────────────────────────────────────────────────────────────
+
+        // ── VigenereCipher ───────────────────────────────────────────
+        const VigenereCipher = (() => {
+            function encrypt(plaintext, key, charset) {
+                if (!key) return plaintext;
+                // 將 key 中不在 charset 的字元過濾掉，確保每個 key 字元都有對應 index
+                const validKey = key.split('').filter(c => charset.indexOf(c) !== -1);
+                if (validKey.length === 0) return plaintext;
+                const m = charset.length;
+                let ki = 0;
+                return plaintext.split('').map(c => {
+                    const ci = charset.indexOf(c);
+                    if (ci === -1) return c;
+                    const shift = charset.indexOf(validKey[ki % validKey.length]);
+                    ki++;
+                    return charset[(ci + shift) % m];
+                }).join('');
+            }
+
+            return { encrypt };
+        })();
+        // ────────────────────────────────────────────────────────────
+
+        // ── PlayfairCipher ───────────────────────────────────────────
+        const PlayfairCipher = (() => {
+            function _getDimensions(n) {
+                // 找最接近正方形的 rows × cols，rows <= cols
+                let rows = Math.floor(Math.sqrt(n));
+                while (n % rows !== 0) rows--;
+                return { rows, cols: n / rows };
+            }
+
+            function _buildGrid(key, charset) {
+                const n = charset.length;
+                const { rows, cols } = _getDimensions(n);
+                const seen = new Set();
+                const seq = [];
+                for (const c of key) {
+                    if (charset.includes(c) && !seen.has(c)) {
+                        seen.add(c);
+                        seq.push(c);
+                    }
+                }
+                for (const c of charset) {
+                    if (!seen.has(c)) seq.push(c);
+                }
+                const grid = [];
+                const pos = {};
+                for (let i = 0; i < n; i++) {
+                    const r = Math.floor(i / cols), c = i % cols;
+                    if (!grid[r]) grid[r] = [];
+                    grid[r][c] = seq[i];
+                    pos[seq[i]] = [r, c];
+                }
+                return { grid, pos, rows, cols };
+            }
+
+            function _prepareText(text, charset) {
+                const chars = text.split('').filter(c => charset.includes(c));
+                const pad = charset.includes('X') ? 'X' : charset[charset.length - 1];
+                const pairs = [];
+                let i = 0;
+                while (i < chars.length) {
+                    const a = chars[i];
+                    const b = chars[i + 1];
+                    if (b === undefined) {
+                        pairs.push([a, pad]);
+                        i++;
+                    } else if (a === b) {
+                        pairs.push([a, pad]);
+                        i++;
+                    } else {
+                        pairs.push([a, b]);
+                        i += 2;
+                    }
+                }
+                return pairs;
+            }
+
+            function encrypt(plaintext, key, charset) {
+                if (!key) return plaintext;
+                const { grid, pos, rows, cols } = _buildGrid(key, charset);
+                const pairs = _prepareText(plaintext, charset);
+                return pairs.map(([a, b]) => {
+                    const [ra, ca] = pos[a];
+                    const [rb, cb] = pos[b];
+                    if (ra === rb) {
+                        // 同列：各往右移一格
+                        return grid[ra][(ca + 1) % cols] + grid[rb][(cb + 1) % cols];
+                    } else if (ca === cb) {
+                        // 同欄：各往下移一格
+                        return grid[(ra + 1) % rows][ca] + grid[(rb + 1) % rows][cb];
+                    } else {
+                        // 矩形：交換欄
+                        return grid[ra][cb] + grid[rb][ca];
+                    }
+                }).join('');
+            }
+
+            return { encrypt };
+        })();
+        // ────────────────────────────────────────────────────────────
+
+        // ── HillCipher ───────────────────────────────────────────────
+        const HillCipher = (() => {
+            function _det2(a, b, c, d, m) {
+                return ((a * d - b * c) % m + m) % m;
+            }
+
+            function _modInverse(a, m) {
+                a = ((a % m) + m) % m;
+                for (let x = 1; x < m; x++) {
+                    if ((a * x) % m === 1) return x;
+                }
+                return -1; // 不可逆
+            }
+
+            function isValidKey(a, b, c, d, m) {
+                const det = _det2(a, b, c, d, m);
+                return _modInverse(det, m) !== -1;
+            }
+
+            function encrypt(plaintext, a, b, c, d, charset) {
+                const m = charset.length;
+                // 過濾不在 charset 的字元，記錄位置以便還原
+                const chars = plaintext.split('');
+                const indices = [];
+                const filtered = [];
+                chars.forEach((ch, i) => {
+                    const idx = charset.indexOf(ch);
+                    if (idx !== -1) {
+                        filtered.push(idx);
+                        indices.push(i);
+                    }
+                });
+
+                // 若長度為奇數，補一個 charset[0]
+                if (filtered.length % 2 !== 0) filtered.push(0);
+
+                // 2×2 矩陣乘法
+                const encrypted = [];
+                for (let i = 0; i < filtered.length; i += 2) {
+                    const p1 = filtered[i], p2 = filtered[i + 1];
+                    encrypted.push(((a * p1 + b * p2) % m + m) % m);
+                    encrypted.push(((c * p1 + d * p2) % m + m) % m);
+                }
+
+                // 將結果放回原位，不在 charset 的字元原樣保留
+                const result = [...chars];
+                indices.forEach((pos, i) => {
+                    if (i < encrypted.length) result[pos] = charset[encrypted[i]];
+                });
+                return result.join('');
+            }
+
+            return { encrypt, isValidKey };
+        })();
+        // ────────────────────────────────────────────────────────────
+
+        // ── EncryptionManager ────────────────────────────────────────
+        const EncryptionManager = (() => {
+            function _getRuleIds(planCode) {
+                return [...planCode.matchAll(/\d/g)].map(m => parseInt(m[0])).filter(n => n >= 1 && n <= 5);
+            }
+
+            function _applyRule(ruleId, input, charset, resultEl) {
+                if (ruleId === 1) {
+                    const shift = parseInt(document.getElementById('rule-shift').value) || 3;
+                    return CaesarCipher.encrypt(input, shift, charset);
+                } else if (ruleId === 2) {
+                    const a = parseInt(document.getElementById('rule-affine-a').value);
+                    const b = parseInt(document.getElementById('rule-affine-b').value) || 0;
+                    return AffineCipher.encrypt(input, a, b, charset);
+                } else if (ruleId === 3) {
+                    const key = document.getElementById('rule-vigenere-key').value;
+                    if (!key) {
+                        resultEl.textContent = '請輸入金鑰';
+                        resultEl.style.color = 'var(--text-muted)';
+                        return null;
+                    }
+                    return VigenereCipher.encrypt(input, key, charset);
+                } else if (ruleId === 4) {
+                    const key = document.getElementById('rule-playfair-key').value;
+                    if (!key) {
+                        resultEl.textContent = '請輸入關鍵字';
+                        resultEl.style.color = 'var(--text-muted)';
+                        return null;
+                    }
+                    return PlayfairCipher.encrypt(input, key, charset);
+                } else if (ruleId === 5) {
+                    const a = parseInt(document.getElementById('rule-hill-a').value);
+                    const b = parseInt(document.getElementById('rule-hill-b').value);
+                    const c = parseInt(document.getElementById('rule-hill-c').value);
+                    const d = parseInt(document.getElementById('rule-hill-d').value);
+                    if ([a, b, c, d].some(isNaN)) {
+                        resultEl.textContent = '請填入完整的 2×2 金鑰矩陣';
+                        resultEl.style.color = 'var(--text-muted)';
+                        return null;
+                    }
+                    if (!HillCipher.isValidKey(a, b, c, d, charset.length)) {
+                        resultEl.textContent = '金鑰矩陣不可逆，請調整數值';
+                        resultEl.style.color = 'var(--text-muted)';
+                        return null;
+                    }
+                    return HillCipher.encrypt(input, a, b, c, d, charset);
+                }
+                return null;
+            }
+
+            function run() {
+                const planCode = document.getElementById('enc-plancode').value.trim();
+                const password = document.getElementById('enc-plain').value;
+                const salt     = document.getElementById('enc-salt').value;
+                const length   = parseInt(document.getElementById('enc-length').value);
+                const charset  = CharsetManager.get();
+                const resultEl = document.querySelector('.result-box span');
+
+                if (!planCode || !password) {
+                    resultEl.textContent = '';
+                    resultEl.style.color = '';
+                    document.getElementById('result-hints').innerHTML = '';
+                    return;
+                }
+
+                const ruleIds = _getRuleIds(planCode);
+                if (ruleIds.length === 0) {
+                    resultEl.textContent = '請在 Plan Code 中加入規則編號（1-5）';
+                    resultEl.style.color = 'var(--text-muted)';
+                    return;
+                }
+
+                let result = password + planCode + salt;
+                for (const ruleId of ruleIds) {
+                    result = _applyRule(ruleId, result, charset, resultEl);
+                    if (result === null) return;
+                }
+
+                // 長度處理：超出部分與前段 XOR（在 charset 內做 index XOR），不足則循環補齊
+                if (result.length > length) {
+                    const cs   = CharsetManager.get();
+                    const csLen = cs.length;
+                    // 確保字元在 charset 內，不在則以 charCode % csLen 映射
+                    const toIdx = c => {
+                        const i = cs.indexOf(c);
+                        return i !== -1 ? i : c.charCodeAt(0) % csLen;
+                    };
+                    const base = result.slice(0, length).split('').map(toIdx);
+                    const extra = result.slice(length).split('').map(toIdx);
+                    for (let i = 0; i < extra.length; i++) {
+                        base[i % length] = (base[i % length] ^ extra[i]) % csLen;
+                    }
+                    result = base.map(i => cs[i]).join('');
+                } else {
+                    while (result.length < length) result += result;
+                    result = result.slice(0, length);
+                }
+
+                resultEl.textContent = result;
+                resultEl.style.color = '';
+
+                // ── 自動補充字元 ─────────────────────────────────────
+                const autoUpper  = document.getElementById('auto-upper').checked;
+                const autoLower  = document.getElementById('auto-lower').checked;
+                const autoDigit  = document.getElementById('auto-digit').checked;
+                const autoSymbol = document.getElementById('auto-symbol').checked;
+
+                if (autoUpper || autoLower || autoDigit || autoSymbol) {
+                    const UPPER_SET  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    const LOWER_SET  = 'abcdefghijklmnopqrstuvwxyz';
+                    const DIGIT_SET  = '0123456789';
+                    const SYMBOL_SET = CharsetManager.get().replace(/[A-Za-z0-9]/g, '');
+
+                    // 確定性 hash：將字串轉為穩定整數
+                    const _hash = str => {
+                        let h = 0;
+                        for (let i = 0; i < str.length; i++)
+                            h = (h * 31 + str.charCodeAt(i)) >>> 0;
+                        return h;
+                    };
+
+                    const types = [
+                        { key: 'upper',  enabled: autoUpper,  set: UPPER_SET,  test: /[A-Z]/ },
+                        { key: 'lower',  enabled: autoLower,  set: LOWER_SET,  test: /[a-z]/ },
+                        { key: 'digit',  enabled: autoDigit,  set: DIGIT_SET,  test: /[0-9]/ },
+                        { key: 'symbol', enabled: autoSymbol, set: SYMBOL_SET, test: /[^A-Za-z0-9]/ },
+                    ].filter(t => t.enabled && t.set.length > 0 && !t.test.test(result));
+
+                    const arr = result.split('');
+                    const seed = password + planCode + salt;
+
+                    types.forEach((type, ti) => {
+                        // 找出每個類型在目前結果中唯一字元的位置（需保護）
+                        const protectedPos = new Set();
+                        [
+                            { test: /[A-Z]/, set: UPPER_SET },
+                            { test: /[a-z]/, set: LOWER_SET },
+                            { test: /[0-9]/, set: DIGIT_SET },
+                            { test: /[^A-Za-z0-9]/, set: SYMBOL_SET },
+                        ].forEach(other => {
+                            if (other.set === type.set) return;
+                            const positions = arr.reduce((acc, c, i) => {
+                                if (other.test.test(c)) acc.push(i);
+                                return acc;
+                            }, []);
+                            if (positions.length === 1) protectedPos.add(positions[0]);
+                        });
+
+                        // 候選位置：排除受保護的位置
+                        const candidates = arr.map((_, i) => i).filter(i => !protectedPos.has(i));
+                        if (candidates.length === 0) return;
+
+                        // 用 hash 確定性選位置與字元
+                        const posIdx = _hash(seed + type.key + 'pos') % candidates.length;
+                        const charIdx = _hash(seed + type.key + 'char') % type.set.length;
+
+                        arr[candidates[posIdx]] = type.set[charIdx];
+                    });
+
+                    result = arr.join('');
+                    resultEl.textContent = result;
+                }
+                // ────────────────────────────────────────────────────
+
+                // 密碼強度提示
+                const hintsEl = document.getElementById('result-hints');
+                hintsEl.innerHTML = '';
+                const checks = [
+                    { test: /[A-Z]/, label: '缺少大寫字母' },
+                    { test: /[a-z]/, label: '缺少小寫字母' },
+                    { test: /[0-9]/, label: '缺少數字' },
+                    { test: /[^A-Za-z0-9]/, label: '缺少特殊符號' },
+                ];
+                checks.forEach(({ test, label }) => {
+                    if (!test.test(result)) {
+                        const tag = document.createElement('span');
+                        tag.className = 'result-hint-tag';
+                        tag.textContent = label;
+                        hintsEl.appendChild(tag);
+                    }
+                });
+            }
+
+            return { run };
+        })();
+
+        document.querySelector('.btn-primary').addEventListener('click', () => {
+            if (!StorageManager.get('flags.firstUseSeen', false)) {
+                FirstUseNotice.show();
+            }
+            EncryptionManager.run();
+        });
+        // ────────────────────────────────────────────────────────────
+
+        // ── 儲存規則參數設定 ─────────────────────────────────────────
+        document.getElementById('rule-shift').addEventListener('input', e => {
+            StorageManager.set('prefs.caesar.shift', e.target.value);
+        });
+        document.getElementById('rule-affine-b').addEventListener('input', e => {
+            StorageManager.set('prefs.affine.b', e.target.value);
+        });
+        document.getElementById('rule-vigenere-key').addEventListener('input', e => {
+            StorageManager.set('prefs.vigenere.key', e.target.value);
+        });
+        document.getElementById('rule-playfair-key').addEventListener('input', e => {
+            StorageManager.set('prefs.playfair.key', e.target.value);
+        });
+        ['a','b','c','d'].forEach(k => {
+            document.getElementById(`rule-hill-${k}`).addEventListener('input', e => {
+                const hill = StorageManager.get('prefs.hill') || {};
+                hill[k] = e.target.value;
+                StorageManager.set('prefs.hill', hill);
+            });
+        });
+        document.getElementById('enc-plancode').addEventListener('input', e => {
+            StorageManager.set('session.planCode', e.target.value);
+        });
+        // 自動補充字元
+        function _saveAutoFill() {
+            StorageManager.set('prefs.autoFill', {
+                upper:  document.getElementById('auto-upper').checked,
+                lower:  document.getElementById('auto-lower').checked,
+                digit:  document.getElementById('auto-digit').checked,
+                symbol: document.getElementById('auto-symbol').checked,
+            });
+        }
+        ['upper','lower','digit','symbol'].forEach(k => {
+            document.getElementById(`auto-${k}`).addEventListener('change', _saveAutoFill);
+        });
+        // 仿射乘數 a 由 custom-select 的 click 事件在 populateSelect 內處理，
+        // 選定後同步寫入 localStorage
+        // ────────────────────────────────────────────────────────────
+
+        // details 展開動畫
+        document.querySelectorAll('.rule-details').forEach(details => {
+            const summary = details.querySelector('.rule-summary');
+            const btn = details.querySelector('.hint-icon.clickable');
+
+            summary.addEventListener('click', e => {
+                e.preventDefault();
+                if (!e.target.closest('.hint-icon.clickable')) return;
+
+                if (details.open) {
+                    details.classList.remove('is-open');
+                    const wrap = details.querySelector('.rule-expand-wrap');
+                    wrap.addEventListener('transitionend', () => {
+                        details.removeAttribute('open');
+                    }, { once: true });
+                } else {
+                    details.setAttribute('open', '');
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            details.classList.add('is-open');
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
