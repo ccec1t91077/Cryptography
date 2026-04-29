@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>密碼加密工具</title>
+    <title data-i18n-title>密碼加密工具</title>
     <link href="fonts/fonts.css" rel="stylesheet" />
     <script>
         // 提前套用暗色模式，避免頁面載入時的白色閃爍
@@ -261,25 +261,6 @@
         input[type="password"]:hover:not(:focus),
         input[type="number"]:hover:not(:focus) {
             border-color: var(--text-muted);
-        }
-
-        input[type="text"]:disabled,
-        input[type="password"]:disabled,
-        input[type="number"]:disabled {
-            background: var(--surface2);
-            border-color: var(--border);
-            color: var(--text-muted);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .custom-select.is-disabled .custom-select-trigger {
-            background: var(--surface2);
-            border-color: var(--border);
-            color: var(--text-muted);
-            cursor: not-allowed;
-            opacity: 0.6;
-            pointer-events: none;
         }
 
         input::placeholder { color: var(--text-muted); }
@@ -594,12 +575,6 @@
         .rule-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
         .rule-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-            font-family: var(--mono);
-            margin-bottom: 0;
-            letter-spacing: -0.01em;
             display: flex;
             flex-direction: column;
             gap: 3px;
@@ -638,8 +613,6 @@
             color: var(--text-secondary);
             line-height: 1.7;
         }
-
-        .rule-details { list-style: none; }
 
         .rule-details.is-open .hint-icon,
         .hint-icon.clickable:hover {
@@ -682,10 +655,6 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-        }
-
-        .rule-expand .rule-desc {
-            margin: 0;
         }
 
         .form-group.rule-input {
@@ -922,6 +891,49 @@
         html.dark .dark-toggle .icon-sun { display: block; }
         html.dark .dark-toggle .icon-moon { display: none; }
 
+        .lang-toggle {
+            position: fixed;
+            bottom: 16px;
+            left: 62px;
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 17px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            gap: 0;
+            cursor: pointer;
+            z-index: 500;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--sans);
+            color: var(--text-muted);
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+            user-select: none;
+        }
+
+        .lang-toggle:hover {
+            color: var(--accent);
+            border-color: var(--symbol-selected-border);
+            background: var(--symbol-selected-bg);
+        }
+
+        .lang-toggle .lang-opt {
+            padding: 0 5px;
+            transition: color 0.15s ease;
+        }
+
+        .lang-toggle .lang-sep {
+            color: var(--border);
+            font-weight: 400;
+        }
+
+        .lang-toggle .lang-opt.is-active {
+            color: var(--accent);
+        }
+
         .first-use-modal {
             display: none;
             position: fixed;
@@ -1057,28 +1069,28 @@
         <div class="panel">
             <div class="panel-head">
                 <div class="panel-head-icon blue">📖</div>
-                <h2>使用說明</h2>
+                <h2 data-i18n="guide.title">使用說明</h2>
             </div>
             <div class="panel-body">
                 <div class="info-step">
                     <div class="step-num">1</div>
-                    <div class="step-text">在右側選擇<strong>加密規則</strong>並填入參數。Plan Code 中的數字對應規則編號，可填入多個數字依序套用，例如 <strong>131</strong> 代表凱薩 → 維吉尼亞 → 凱薩。</div>
+                    <div class="step-text" data-i18n="guide.step1">在右側選擇<strong>加密規則</strong>並填入參數。Plan Code 中的數字對應規則編號，可填入多個數字依序套用，例如 <strong>131</strong> 代表凱薩 → 維吉尼亞 → 凱薩。</div>
                 </div>
                 <div class="info-step">
                     <div class="step-num">2</div>
-                    <div class="step-text">輸入 <strong>Plan Code</strong>，這是每個帳號的唯一識別碼，可自由組合文字與規則編號。</div>
+                    <div class="step-text" data-i18n="guide.step2">輸入 <strong>Plan Code</strong>，這是每個帳號的唯一識別碼，可自由組合文字與規則編號。</div>
                 </div>
                 <div class="info-step">
                     <div class="step-num">3</div>
-                    <div class="step-text">輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。</div>
+                    <div class="step-text" data-i18n="guide.step3">輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。</div>
                 </div>
                 <div class="info-step">
                     <div class="step-num">4</div>
-                    <div class="step-text">視需要填入 <strong>Salt</strong>、調整<strong>特殊符號</strong>、<strong>密碼長度</strong>與<strong>自動補充字元</strong>選項。</div>
+                    <div class="step-text" data-i18n="guide.step4">視需要填入 <strong>Salt</strong>、調整<strong>特殊符號</strong>、<strong>密碼長度</strong>與<strong>自動補充字元</strong>選項。</div>
                 </div>
                 <div class="info-step">
                     <div class="step-num">5</div>
-                    <div class="step-text">點擊按鈕產生<strong>加密密碼</strong>，複製後用於網站登入。</div>
+                    <div class="step-text" data-i18n="guide.step5">點擊按鈕產生<strong>加密密碼</strong>，複製後用於網站登入。</div>
                 </div>
 
             </div>
@@ -1087,25 +1099,25 @@
         <div class="panel">
             <div class="panel-head">
                 <div class="panel-head-icon indigo">🔐</div>
-                <h2>密碼加密工具</h2>
+                <h2 data-i18n="tool.title">密碼加密工具</h2>
             </div>
             <div class="panel-body">
                 <div class="card-icon-wrap">
                     <div class="card-icon">🔒</div>
-                    <div class="card-title">產生登入密碼</div>
-                    <div class="card-sub">將明文密碼加密成實際用於登入的強密碼</div>
+                    <div class="card-title" data-i18n="tool.cardTitle">產生登入密碼</div>
+                    <div class="card-sub" data-i18n="tool.cardSub">將明文密碼加密成實際用於登入的強密碼</div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="enc-plancode">Plan code</label>
-                    <input type="text" id="enc-plancode" placeholder="輸入 Plan Code" autocomplete="off" />
+                    <input type="text" id="enc-plancode" data-i18n-placeholder="tool.plancodePlaceholder" placeholder="輸入 Plan Code" autocomplete="off" />
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="enc-plain">Password</label>
                     <div class="input-wrap">
-                        <input type="password" id="enc-plain" class="mono" placeholder="例如：mydog2024" autocomplete="off" />
-                        <button class="input-action-btn" id="toggle-password" type="button" title="顯示密碼">
+                        <input type="password" id="enc-plain" class="mono" data-i18n-placeholder="tool.passwordPlaceholder" placeholder="例如：mydog2024" autocomplete="off" />
+                        <button class="input-action-btn" id="toggle-password" type="button" data-i18n-title="tool.showPassword" title="顯示密碼">
                             <svg class="eye-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
@@ -1122,27 +1134,27 @@
                 <div class="form-group">
                     <label class="form-label" for="enc-salt">
                         Salt
-                        <span class="optional-tag">選填</span>
+                        <span class="optional-tag" data-i18n="common.optional">選填</span>
                         <span class="hint-wrap">
                             <span class="hint-icon"></span>
-                            <span class="hint-tooltip">加鹽值可增加密碼複雜度與安全性，可留空或輸入任意字串。</span>
+                            <span class="hint-tooltip" data-i18n="tool.saltHint">加鹽值可增加密碼複雜度與安全性，可留空或輸入任意字串。</span>
                         </span>
                     </label>
-                    <input type="text" id="enc-salt" placeholder="例如：randomsalt123" autocomplete="off" />
+                    <input type="text" id="enc-salt" data-i18n-placeholder="tool.saltPlaceholder" placeholder="例如：randomsalt123" autocomplete="off" />
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">
-                        密碼含特殊符號
+                        <span data-i18n="tool.symbolsLabel">密碼含特殊符號</span>
                         <span class="hint-wrap">
                             <span class="hint-icon"></span>
-                            <span class="hint-tooltip">勾選允許出現在加密結果中的特殊符號，取消勾選的符號將被排除。</span>
+                            <span class="hint-tooltip" data-i18n="tool.symbolsHint">勾選允許出現在加密結果中的特殊符號，取消勾選的符號將被排除。</span>
                         </span>
                     </label>
                     <div class="symbol-group">
                         <div class="symbol-toggle-row">
                             <label class="symbol-toggle-all">
-                                <input type="checkbox" id="symbol-select-all" checked>全選
+                                <input type="checkbox" id="symbol-select-all" checked><span data-i18n="common.selectAll">全選</span>
                             </label>
                         </div>
                         <div class="symbol-grid">
@@ -1166,7 +1178,7 @@
 
                 <div class="form-group">
                     <div class="range-label-row">
-                        <label class="form-label" for="enc-length">密碼長度</label>
+                        <label class="form-label" for="enc-length" data-i18n="tool.lengthLabel">密碼長度</label>
                         <output class="range-output" for="enc-length">8</output>
                     </div>
                     <input type="range" id="enc-length" min="6" max="24" value="8" step="1" />
@@ -1174,39 +1186,39 @@
 
                 <div class="form-group">
                     <div class="form-label">
-                        自動補充字元
+                        <span data-i18n="tool.autoFillLabel">自動補充字元</span>
                         <span class="hint-wrap">
                             <span class="hint-icon"></span>
-                            <span class="hint-tooltip">勾選後，若產生的密碼缺少該類型字元，將自動替換密碼中的部分字元以確保包含。</span>
+                            <span class="hint-tooltip" data-i18n="tool.autoFillHint">勾選後，若產生的密碼缺少該類型字元，將自動替換密碼中的部分字元以確保包含。</span>
                         </span>
                     </div>
                     <div class="auto-fill-group">
                         <label class="auto-fill-item">
                             <input type="checkbox" id="auto-upper" checked />
-                            <span>大寫英文字母</span>
+                            <span data-i18n="tool.autoUpper">大寫英文字母</span>
                         </label>
                         <label class="auto-fill-item">
                             <input type="checkbox" id="auto-lower" checked />
-                            <span>小寫英文字母</span>
+                            <span data-i18n="tool.autoLower">小寫英文字母</span>
                         </label>
                         <label class="auto-fill-item">
                             <input type="checkbox" id="auto-digit" checked />
-                            <span>數字</span>
+                            <span data-i18n="tool.autoDigit">數字</span>
                         </label>
                         <label class="auto-fill-item">
                             <input type="checkbox" id="auto-symbol" checked />
-                            <span>特殊符號</span>
+                            <span data-i18n="tool.autoSymbol">特殊符號</span>
                         </label>
                     </div>
                 </div>
 
-                <button class="btn-primary" type="button">🔒 產生登入用密碼</button>
+                <button class="btn-primary" type="button" data-i18n="tool.generateBtn">🔒 產生登入用密碼</button>
 
                 <div>
                     <hr class="divider" />
-                    <div class="result-label">加密後的登入密碼</div>
+                    <div class="result-label" data-i18n="tool.resultLabel">加密後的登入密碼</div>
                     <div class="result-box">
-                        <button class="copy-btn" type="button" title="複製">
+                        <button class="copy-btn" type="button" data-i18n-title="tool.copyBtn" title="複製">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="9" y="9" width="13" height="13" rx="2"/>
                                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -1222,7 +1234,7 @@
         <div class="panel">
             <div class="panel-head">
                 <div class="panel-head-icon teal">⚙️</div>
-                <h2>加密規則</h2>
+                <h2 data-i18n="rules.title">加密規則</h2>
             </div>
             <div class="panel-body">
                 <div class="rule-item">
@@ -1231,21 +1243,21 @@
                             <div>
                                 <div class="rule-name">
                                     <span class="rule-num">1</span>
-                                    <label class="form-label rule-name-label">凱薩密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                    <label class="form-label rule-name-label" data-i18n="rules.caesar.name">凱薩密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
                                 </div>
                             </div>
                         </summary>
                         <div class="rule-expand-wrap">
                             <div class="rule-expand-inner">
                                 <div class="rule-expand">
-                                    <p class="rule-desc">最基本的加密方式，將密碼中的每個字元在字元表上往後移動固定的距離。位移量決定移動幾格，數字越大結果越難猜。（位移量可為負數）</p>
+                                    <p class="rule-desc" data-i18n="rules.caesar.desc">最基本的加密方式，將密碼中的每個字元在字元表上往後移動固定的距離。位移量決定移動幾格，數字越大結果越難猜。（位移量可為負數）</p>
                                 </div>
                             </div>
                         </div>
                     </details>
                     <div class="form-group rule-input">
-                        <label class="form-label" for="rule-shift">位移量</label>
-                        <input type="number" id="rule-shift" placeholder="例如：3" autocomplete="off" />
+                        <label class="form-label" for="rule-shift" data-i18n="rules.caesar.shiftLabel">位移量</label>
+                        <input type="number" id="rule-shift" data-i18n-placeholder="rules.caesar.shiftPlaceholder" placeholder="例如：3" autocomplete="off" />
                     </div>
                 </div>
                 <div class="rule-item">
@@ -1254,20 +1266,20 @@
                             <div>
                                 <div class="rule-name">
                                     <span class="rule-num">2</span>
-                                    <label class="form-label rule-name-label">仿射密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                    <label class="form-label rule-name-label" data-i18n="rules.affine.name">仿射密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
                                 </div>
                             </div>
                         </summary>
                         <div class="rule-expand-wrap">
                             <div class="rule-expand-inner">
                                 <div class="rule-expand">
-                                    <p class="rule-desc">透過兩個數字對密碼進行雙重混淆，讓加密結果比單純位移更難被猜測。<br><br>乘數決定字元跳躍的幅度，位移量決定起始偏移的距離，兩者搭配使用讓每個字元的變換更加複雜。</p>
+                                    <p class="rule-desc" data-i18n="rules.affine.desc">透過兩個數字對密碼進行雙重混淆，讓加密結果比單純位移更難被猜測。<br><br>乘數決定字元跳躍的幅度，位移量決定起始偏移的距離，兩者搭配使用讓每個字元的變換更加複雜。</p>
                                 </div>
                             </div>
                         </div>
                     </details>
                     <div class="form-group rule-input">
-                        <label class="form-label" for="rule-affine-a">乘數 a</label>
+                        <label class="form-label" for="rule-affine-a" data-i18n="rules.affine.multiplierLabel">乘數 a</label>
                         <input type="hidden" id="rule-affine-a" />
                         <div class="custom-select" id="rule-affine-a-select">
                             <div class="custom-select-trigger">
@@ -1278,8 +1290,8 @@
                         </div>
                     </div>
                     <div class="form-group rule-input">
-                        <label class="form-label" for="rule-affine-b">位移量 b</label>
-                        <input type="number" id="rule-affine-b" placeholder="例如：8" autocomplete="off" />
+                        <label class="form-label" for="rule-affine-b" data-i18n="rules.affine.shiftLabel">位移量 b</label>
+                        <input type="number" id="rule-affine-b" data-i18n-placeholder="rules.affine.shiftPlaceholder" placeholder="例如：8" autocomplete="off" />
                     </div>
                 </div>
                 <div class="rule-item">
@@ -1288,20 +1300,20 @@
                             <div>
                                 <div class="rule-name">
                                     <span class="rule-num">3</span>
-                                    <label class="form-label rule-name-label">維吉尼亞密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                    <label class="form-label rule-name-label" data-i18n="rules.vigenere.name">維吉尼亞密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
                                 </div>
                             </div>
                         </summary>
                         <div class="rule-expand-wrap">
                             <div class="rule-expand-inner">
                                 <div class="rule-expand">
-                                    <p class="rule-desc">使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。</p>
+                                    <p class="rule-desc" data-i18n="rules.vigenere.desc">使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。</p>
                                 </div>
                             </div>
                         </div>
                     </details>
                     <div class="form-group rule-input">
-                        <label class="form-label" for="rule-vigenere-key">金鑰</label>
+                        <label class="form-label" for="rule-vigenere-key" data-i18n="rules.vigenere.keyLabel">金鑰</label>
                         <input type="text" id="rule-vigenere-key" class="mono" placeholder="例如：SECRET" autocomplete="off" />
                     </div>
                 </div>
@@ -1311,20 +1323,20 @@
                             <div>
                                 <div class="rule-name">
                                     <span class="rule-num">4</span>
-                                    <label class="form-label rule-name-label">波雷費密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                    <label class="form-label rule-name-label" data-i18n="rules.playfair.name">波雷費密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
                                 </div>
                             </div>
                         </summary>
                         <div class="rule-expand-wrap">
                             <div class="rule-expand-inner">
                                 <div class="rule-expand">
-                                    <p class="rule-desc">透過一組關鍵字將字元打亂成一張對照表，再以兩個字元為一組進行替換。關鍵字決定對照表的排列方式，不同的關鍵字會產生完全不同的加密結果。</p>
+                                    <p class="rule-desc" data-i18n="rules.playfair.desc">透過一組關鍵字將字元打亂成一張對照表，再以兩個字元為一組進行替換。關鍵字決定對照表的排列方式，不同的關鍵字會產生完全不同的加密結果。</p>
                                 </div>
                             </div>
                         </div>
                     </details>
                     <div class="form-group rule-input">
-                        <label class="form-label" for="rule-playfair-key">關鍵字</label>
+                        <label class="form-label" for="rule-playfair-key" data-i18n="rules.playfair.keyLabel">關鍵字</label>
                         <input type="text" id="rule-playfair-key" class="mono" placeholder="例如：KEYWORD" autocomplete="off" />
                     </div>
                 </div>
@@ -1334,20 +1346,20 @@
                             <div>
                                 <div class="rule-name">
                                     <span class="rule-num">5</span>
-                                    <label class="form-label rule-name-label">希爾密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
+                                    <label class="form-label rule-name-label" data-i18n="rules.hill.name">希爾密碼<span class="hint-wrap"><span class="hint-icon clickable"></span></span></label>
                                 </div>
                             </div>
                         </summary>
                         <div class="rule-expand-wrap">
                             <div class="rule-expand-inner">
                                 <div class="rule-expand">
-                                    <p class="rule-desc">使用四個數字組成的金鑰，將密碼中的字元兩兩一組進行混合運算，讓每對字元互相影響彼此的加密結果，難以單獨還原。</p>
+                                    <p class="rule-desc" data-i18n="rules.hill.desc">使用四個數字組成的金鑰，將密碼中的字元兩兩一組進行混合運算，讓每對字元互相影響彼此的加密結果，難以單獨還原。</p>
                                 </div>
                             </div>
                         </div>
                     </details>
                     <div class="form-group rule-input">
-                        <div class="form-label">金鑰矩陣（2×2）</div>
+                        <div class="form-label" data-i18n="rules.hill.matrixLabel">金鑰矩陣（2×2）</div>
                         <div class="hill-matrix">
                             <input type="number" id="rule-hill-a" placeholder="a" autocomplete="off" />
                             <input type="number" id="rule-hill-b" placeholder="b" autocomplete="off" />
@@ -1363,7 +1375,7 @@
 
     <div class="app-version">v1.1.0<br>© 2026 ccec1t91077</div>
 
-    <button class="dark-toggle" id="dark-toggle" type="button" title="切換暗色模式">
+    <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
         <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
@@ -1380,38 +1392,229 @@
         </svg>
     </button>
 
+    <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">
+        <span class="lang-opt" id="lang-opt-zh">繁中</span>
+        <span class="lang-sep">/</span>
+        <span class="lang-opt" id="lang-opt-en">EN</span>
+    </button>
+
     <div class="first-use-modal" id="first-use-modal">
         <div class="first-use-overlay"></div>
         <div class="first-use-content">
             <div class="first-use-icon">🔒</div>
-            <h3 class="first-use-title">使用前說明</h3>
+            <h3 class="first-use-title" data-i18n="modal.title">使用前說明</h3>
             <ul class="first-use-list">
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span>所有加密運算<strong>在瀏覽器本地執行</strong>，不會傳輸任何資料至外部</span>
+                    <span data-i18n="modal.item1">所有加密運算<strong>在瀏覽器本地執行</strong>，不會傳輸任何資料至外部</span>
                 </li>
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span>所有密碼相關的輸入<strong>不會被保留</strong>，關閉頁面即消失</span>
+                    <span data-i18n="modal.item2">所有密碼相關的輸入<strong>不會被保留</strong>，關閉頁面即消失</span>
                 </li>
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span>相同的輸入與設定每次都會產出<strong>相同結果</strong>，可隨時重新產生密碼</span>
+                    <span data-i18n="modal.item3">相同的輸入與設定每次都會產出<strong>相同結果</strong>，可隨時重新產生密碼</span>
                 </li>
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span>此工具為純靜態頁面，<strong>無後端伺服器</strong></span>
+                    <span data-i18n="modal.item4">此工具為純靜態頁面，<strong>無後端伺服器</strong></span>
                 </li>
             </ul>
             <div class="first-use-note">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>規則參數等偏好設定會儲存於瀏覽器的 localStorage。如需清除，請透過瀏覽器的「清除網站資料」功能。</span>
+                <span data-i18n="modal.note">規則參數等偏好設定會儲存於瀏覽器的 localStorage。如需清除，請透過瀏覽器的「清除網站資料」功能。</span>
             </div>
-            <button class="first-use-btn" id="first-use-close">知道了</button>
+            <button class="first-use-btn" id="first-use-close" data-i18n="modal.closeBtn">知道了</button>
         </div>
     </div>
 
     <script>
+        // ── i18n ─────────────────────────────────────────────────────
+        const i18n = (() => {
+            const translations = {
+                'zh-TW': {
+                    pageTitle: '密碼加密工具',
+                    'guide.title': '使用說明',
+                    'guide.step1': '在右側選擇<strong>加密規則</strong>並填入參數。Plan Code 中的數字對應規則編號，可填入多個數字依序套用，例如 <strong>131</strong> 代表凱薩 → 維吉尼亞 → 凱薩。',
+                    'guide.step2': '輸入 <strong>Plan Code</strong>，這是每個帳號的唯一識別碼，可自由組合文字與規則編號。',
+                    'guide.step3': '輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。',
+                    'guide.step4': '視需要填入 <strong>Salt</strong>、調整<strong>特殊符號</strong>、<strong>密碼長度</strong>與<strong>自動補充字元</strong>選項。',
+                    'guide.step5': '點擊按鈕產生<strong>加密密碼</strong>，複製後用於網站登入。',
+                    'tool.title': '密碼加密工具',
+                    'tool.cardTitle': '產生登入密碼',
+                    'tool.cardSub': '將明文密碼加密成實際用於登入的強密碼',
+                    'tool.plancodePlaceholder': '輸入 Plan Code',
+                    'tool.passwordPlaceholder': '例如：mydog2024',
+                    'tool.showPassword': '顯示密碼',
+                    'tool.saltHint': '加鹽值可增加密碼複雜度與安全性，可留空或輸入任意字串。',
+                    'tool.saltPlaceholder': '例如：randomsalt123',
+                    'tool.symbolsLabel': '密碼含特殊符號',
+                    'tool.symbolsHint': '勾選允許出現在加密結果中的特殊符號，取消勾選的符號將被排除。',
+                    'tool.lengthLabel': '密碼長度',
+                    'tool.autoFillLabel': '自動補充字元',
+                    'tool.autoFillHint': '勾選後，若產生的密碼缺少該類型字元，將自動替換密碼中的部分字元以確保包含。',
+                    'tool.autoUpper': '大寫英文字母',
+                    'tool.autoLower': '小寫英文字母',
+                    'tool.autoDigit': '數字',
+                    'tool.autoSymbol': '特殊符號',
+                    'tool.generateBtn': '🔒 產生登入用密碼',
+                    'tool.resultLabel': '加密後的登入密碼',
+                    'tool.copyBtn': '複製',
+                    'common.optional': '選填',
+                    'common.selectAll': '全選',
+                    'common.darkToggle': '切換暗色模式',
+                    'rules.title': '加密規則',
+                    'rules.caesar.name': '凱薩密碼',
+                    'rules.caesar.desc': '最基本的加密方式，將密碼中的每個字元在字元表上往後移動固定的距離。位移量決定移動幾格，數字越大結果越難猜。（位移量可為負數）',
+                    'rules.caesar.shiftLabel': '位移量',
+                    'rules.caesar.shiftPlaceholder': '例如：3',
+                    'rules.affine.name': '仿射密碼',
+                    'rules.affine.desc': '透過兩個數字對密碼進行雙重混淆，讓加密結果比單純位移更難被猜測。<br><br>乘數決定字元跳躍的幅度，位移量決定起始偏移的距離，兩者搭配使用讓每個字元的變換更加複雜。',
+                    'rules.affine.multiplierLabel': '乘數 a',
+                    'rules.affine.shiftLabel': '位移量 b',
+                    'rules.affine.shiftPlaceholder': '例如：8',
+                    'rules.vigenere.name': '維吉尼亞密碼',
+                    'rules.vigenere.desc': '使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。',
+                    'rules.vigenere.keyLabel': '金鑰',
+                    'rules.playfair.name': '波雷費密碼',
+                    'rules.playfair.desc': '透過一組關鍵字將字元打亂成一張對照表，再以兩個字元為一組進行替換。關鍵字決定對照表的排列方式，不同的關鍵字會產生完全不同的加密結果。',
+                    'rules.playfair.keyLabel': '關鍵字',
+                    'rules.hill.name': '希爾密碼',
+                    'rules.hill.desc': '使用四個數字組成的金鑰，將密碼中的字元兩兩一組進行混合運算，讓每對字元互相影響彼此的加密結果，難以單獨還原。',
+                    'rules.hill.matrixLabel': '金鑰矩陣（2×2）',
+                    'modal.title': '使用前說明',
+                    'modal.item1': '所有加密運算<strong>在瀏覽器本地執行</strong>，不會傳輸任何資料至外部',
+                    'modal.item2': '所有密碼相關的輸入<strong>不會被保留</strong>，關閉頁面即消失',
+                    'modal.item3': '相同的輸入與設定每次都會產出<strong>相同結果</strong>，可隨時重新產生密碼',
+                    'modal.item4': '此工具為純靜態頁面，<strong>無後端伺服器</strong>',
+                    'modal.note': '規則參數等偏好設定會儲存於瀏覽器的 localStorage。如需清除，請透過瀏覽器的「清除網站資料」功能。',
+                    'modal.closeBtn': '知道了',
+                    'err.vigenereKey': '請輸入金鑰',
+                    'err.playfairKey': '請輸入關鍵字',
+                    'err.hillMatrix': '請填入完整的 2×2 金鑰矩陣',
+                    'err.hillInvalid': '金鑰矩陣不可逆，請調整數值',
+                    'err.noPlanCode': '請在 Plan Code 中加入規則編號（1-5）',
+                    'hint.missingUpper': '缺少大寫字母',
+                    'hint.missingLower': '缺少小寫字母',
+                    'hint.missingDigit': '缺少數字',
+                    'hint.missingSymbol': '缺少特殊符號',
+                },
+                'en': {
+                    pageTitle: 'Password Encryption Tool',
+                    'guide.title': 'How to Use',
+                    'guide.step1': 'Select an <strong>encryption rule</strong> on the right and fill in its parameters. Each digit in the Plan Code maps to a rule number — you can chain multiple digits to apply rules in sequence. For example, <strong>131</strong> means Caesar → Vigenère → Caesar.',
+                    'guide.step2': 'Enter a <strong>Plan Code</strong> — a unique identifier for each account. You can mix any text with rule numbers freely.',
+                    'guide.step3': 'Enter the <strong>Password</strong> you keep in your notes — this is your plain-text password before encryption.',
+                    'guide.step4': 'Optionally provide a <strong>Salt</strong>, and adjust the <strong>special characters</strong>, <strong>password length</strong>, and <strong>auto-fill</strong> options as needed.',
+                    'guide.step5': 'Click the button to generate your <strong>encrypted password</strong>, then copy and use it to log in.',
+                    'tool.title': 'Password Encryption Tool',
+                    'tool.cardTitle': 'Generate Login Password',
+                    'tool.cardSub': 'Encrypt a plain-text password into a strong password for login',
+                    'tool.plancodePlaceholder': 'Enter Plan Code',
+                    'tool.passwordPlaceholder': 'e.g. mydog2024',
+                    'tool.showPassword': 'Show password',
+                    'tool.saltHint': 'A salt value adds extra complexity and security. You can leave it blank or enter any string.',
+                    'tool.saltPlaceholder': 'e.g. randomsalt123',
+                    'tool.symbolsLabel': 'Include special characters',
+                    'tool.symbolsHint': 'Check the special characters you want to allow in the output. Unchecked ones will be excluded.',
+                    'tool.lengthLabel': 'Password length',
+                    'tool.autoFillLabel': 'Auto-fill character types',
+                    'tool.autoFillHint': 'When enabled, if the generated password is missing a character type, some characters will be replaced to ensure it is included.',
+                    'tool.autoUpper': 'Uppercase letters',
+                    'tool.autoLower': 'Lowercase letters',
+                    'tool.autoDigit': 'Digits',
+                    'tool.autoSymbol': 'Special characters',
+                    'tool.generateBtn': '🔒 Generate Password',
+                    'tool.resultLabel': 'Encrypted login password',
+                    'tool.copyBtn': 'Copy',
+                    'common.optional': 'Optional',
+                    'common.selectAll': 'Select all',
+                    'common.darkToggle': 'Toggle dark mode',
+                    'rules.title': 'Encryption Rules',
+                    'rules.caesar.name': 'Caesar Cipher',
+                    'rules.caesar.desc': 'The most basic cipher — each character is shifted a fixed number of positions along the character set. A larger shift makes the result harder to guess. (The shift value can be negative.)',
+                    'rules.caesar.shiftLabel': 'Shift',
+                    'rules.caesar.shiftPlaceholder': 'e.g. 3',
+                    'rules.affine.name': 'Affine Cipher',
+                    'rules.affine.desc': 'Uses two numbers to apply a double transformation, making the output harder to guess than a plain shift.<br><br>The multiplier controls how far each character jumps, while the shift sets the starting offset. Together they make each character\'s transformation more complex.',
+                    'rules.affine.multiplierLabel': 'Multiplier a',
+                    'rules.affine.shiftLabel': 'Shift b',
+                    'rules.affine.shiftPlaceholder': 'e.g. 8',
+                    'rules.vigenere.name': 'Vigenère Cipher',
+                    'rules.vigenere.desc': 'Uses a custom key string so each character is shifted by a different amount, preventing patterns from being detected. A longer, more random key makes the output harder to crack.',
+                    'rules.vigenere.keyLabel': 'Key',
+                    'rules.playfair.name': 'Playfair Cipher',
+                    'rules.playfair.desc': 'Uses a keyword to scramble characters into a lookup table, then encrypts them in pairs. The keyword determines the table layout — different keywords produce completely different results.',
+                    'rules.playfair.keyLabel': 'Keyword',
+                    'rules.hill.name': 'Hill Cipher',
+                    'rules.hill.desc': 'Uses a key made of four numbers to mix pairs of characters through matrix multiplication. Each pair of characters influences the other\'s encrypted output, making individual characters hard to recover.',
+                    'rules.hill.matrixLabel': 'Key matrix (2×2)',
+                    'modal.title': 'Before You Start',
+                    'modal.item1': 'All encryption runs <strong>locally in your browser</strong> — no data is sent anywhere',
+                    'modal.item2': 'Password inputs are <strong>never stored</strong> and disappear when you close the page',
+                    'modal.item3': 'The same inputs and settings always produce <strong>the same result</strong>, so you can regenerate your password anytime',
+                    'modal.item4': 'This is a fully static page with <strong>no backend server</strong>',
+                    'modal.note': 'Rule parameters and preferences are saved in your browser\'s localStorage. To clear them, use your browser\'s "Clear site data" feature.',
+                    'modal.closeBtn': 'Got it',
+                    'err.vigenereKey': 'Please enter a key',
+                    'err.playfairKey': 'Please enter a keyword',
+                    'err.hillMatrix': 'Please fill in the complete 2×2 key matrix',
+                    'err.hillInvalid': 'The key matrix is not invertible — please adjust the values',
+                    'err.noPlanCode': 'Please include a rule number (1–5) in the Plan Code',
+                    'hint.missingUpper': 'Missing uppercase letter',
+                    'hint.missingLower': 'Missing lowercase letter',
+                    'hint.missingDigit': 'Missing digit',
+                    'hint.missingSymbol': 'Missing special character',
+                },
+            };
+
+            let _lang = 'zh-TW';
+
+            function t(key) {
+                return (translations[_lang] && translations[_lang][key]) ||
+                       (translations['zh-TW'][key]) || key;
+            }
+
+            function _applyAll() {
+                // text content (supports innerHTML for <strong> tags)
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    el.innerHTML = t(el.dataset.i18n);
+                });
+                // placeholder
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                    el.placeholder = t(el.dataset.i18nPlaceholder);
+                });
+                // title attribute
+                document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                    el.title = t(el.dataset.i18nTitle);
+                });
+                // page title
+                document.title = translations[_lang].pageTitle || translations['zh-TW'].pageTitle;
+                // html lang
+                document.documentElement.lang = _lang;
+                // lang toggle active state
+                document.getElementById('lang-opt-zh').classList.toggle('is-active', _lang === 'zh-TW');
+                document.getElementById('lang-opt-en').classList.toggle('is-active', _lang === 'en');
+            }
+
+            function setLang(lang) {
+                if (!translations[lang]) return;
+                _lang = lang;
+                _applyAll();
+            }
+
+            function getLang() { return _lang; }
+
+            function init(savedLang) {
+                _lang = translations[savedLang] ? savedLang : 'zh-TW';
+                _applyAll();
+            }
+
+            return { t, setLang, getLang, init };
+        })();
+        // ────────────────────────────────────────────────────────────
+
         // ── StorageManager ──────────────────────────────────────────
         const StorageManager = (() => {
             // 以當前 URL（origin + pathname）產生穩定的 hash key
@@ -1484,6 +1687,10 @@
         })();
 
         StorageManager.init();
+
+        // ── 初始化語言 ───────────────────────────────────────────────
+        i18n.init(StorageManager.get('prefs.lang', 'zh-TW'));
+        // ────────────────────────────────────────────────────────────
 
         // ── 從 localStorage 還原使用者設定 ──────────────────────────
         (() => {
@@ -1574,7 +1781,7 @@
         })();
 
         FirstUseNotice.init();
-        // ────────────────────────────────────────────────────────────        // ────────────────────────────────────────────────────────────
+        // ────────────────────────────────────────────────────────────
 
         // ── DarkMode ─────────────────────────────────────────────────
         const DarkMode = (() => {
@@ -1598,6 +1805,17 @@
         })();
 
         DarkMode.init();
+        // ────────────────────────────────────────────────────────────
+
+        // ── LangToggle ───────────────────────────────────────────────
+        (() => {
+            const btn = document.getElementById('lang-toggle');
+            btn.addEventListener('click', () => {
+                const next = i18n.getLang() === 'zh-TW' ? 'en' : 'zh-TW';
+                i18n.setLang(next);
+                StorageManager.set('prefs.lang', next);
+            });
+        })();
         // ────────────────────────────────────────────────────────────
 
         // ── PasswordVisibility ───────────────────────────────────────
@@ -1652,7 +1870,7 @@
         function _saveSymbols() {
             const checked = [...chips].filter(c => c.checked).map(c => c.value);
             StorageManager.set('prefs.symbols', checked);
-            if (typeof AffineCipher !== 'undefined') AffineCipher.populateSelect();
+            AffineCipher.populateSelect();
         }
         selectAll.addEventListener('change', () => {
             chips.forEach(c => c.checked = selectAll.checked);
@@ -1722,7 +1940,6 @@
                 const prev     = prevValue !== undefined ? prevValue : hidden.value;
 
                 dropdown.innerHTML = '';
-                wrap.classList.remove('is-disabled');
 
                 const m = CharsetManager.get().length;
                 let firstVal = null;
@@ -1947,7 +2164,7 @@
                 } else if (ruleId === 3) {
                     const key = document.getElementById('rule-vigenere-key').value;
                     if (!key) {
-                        resultEl.textContent = '請輸入金鑰';
+                        resultEl.textContent = i18n.t('err.vigenereKey');
                         resultEl.style.color = 'var(--text-muted)';
                         return null;
                     }
@@ -1955,7 +2172,7 @@
                 } else if (ruleId === 4) {
                     const key = document.getElementById('rule-playfair-key').value;
                     if (!key) {
-                        resultEl.textContent = '請輸入關鍵字';
+                        resultEl.textContent = i18n.t('err.playfairKey');
                         resultEl.style.color = 'var(--text-muted)';
                         return null;
                     }
@@ -1966,12 +2183,12 @@
                     const c = parseInt(document.getElementById('rule-hill-c').value);
                     const d = parseInt(document.getElementById('rule-hill-d').value);
                     if ([a, b, c, d].some(isNaN)) {
-                        resultEl.textContent = '請填入完整的 2×2 金鑰矩陣';
+                        resultEl.textContent = i18n.t('err.hillMatrix');
                         resultEl.style.color = 'var(--text-muted)';
                         return null;
                     }
                     if (!HillCipher.isValidKey(a, b, c, d, charset.length)) {
-                        resultEl.textContent = '金鑰矩陣不可逆，請調整數值';
+                        resultEl.textContent = i18n.t('err.hillInvalid');
                         resultEl.style.color = 'var(--text-muted)';
                         return null;
                     }
@@ -1997,7 +2214,7 @@
 
                 const ruleIds = _getRuleIds(planCode);
                 if (ruleIds.length === 0) {
-                    resultEl.textContent = '請在 Plan Code 中加入規則編號（1-5）';
+                    resultEl.textContent = i18n.t('err.noPlanCode');
                     resultEl.style.color = 'var(--text-muted)';
                     return;
                 }
@@ -2061,7 +2278,7 @@
                     const arr = result.split('');
                     const seed = password + planCode + salt;
 
-                    types.forEach((type, ti) => {
+                    types.forEach((type) => {
                         // 找出每個類型在目前結果中唯一字元的位置（需保護）
                         const protectedPos = new Set();
                         [
@@ -2098,16 +2315,16 @@
                 const hintsEl = document.getElementById('result-hints');
                 hintsEl.innerHTML = '';
                 const checks = [
-                    { test: /[A-Z]/, label: '缺少大寫字母' },
-                    { test: /[a-z]/, label: '缺少小寫字母' },
-                    { test: /[0-9]/, label: '缺少數字' },
-                    { test: /[^A-Za-z0-9]/, label: '缺少特殊符號' },
+                    { test: /[A-Z]/, labelKey: 'hint.missingUpper' },
+                    { test: /[a-z]/, labelKey: 'hint.missingLower' },
+                    { test: /[0-9]/, labelKey: 'hint.missingDigit' },
+                    { test: /[^A-Za-z0-9]/, labelKey: 'hint.missingSymbol' },
                 ];
-                checks.forEach(({ test, label }) => {
+                checks.forEach(({ test, labelKey }) => {
                     if (!test.test(result)) {
                         const tag = document.createElement('span');
                         tag.className = 'result-hint-tag';
-                        tag.textContent = label;
+                        tag.textContent = i18n.t(labelKey);
                         hintsEl.appendChild(tag);
                     }
                 });
