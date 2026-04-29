@@ -406,10 +406,6 @@
             margin-top: 1px;
         }
 
-        .hint-icon.clickable {
-            cursor: pointer;
-        }
-
         .hint-wrap:hover .hint-icon {
             background: var(--symbol-selected-bg);
             border-color: var(--symbol-selected-border);
@@ -807,7 +803,6 @@
             box-shadow: var(--shadow-card);
             display: flex;
             align-items: center;
-            gap: 0;
             cursor: pointer;
             z-index: 500;
             font-size: 11px;
@@ -1426,7 +1421,7 @@
 
     </div>
 
-    <div class="app-version">v1.2.0<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.3.0<br>© 2026 ccec1t91077</div>
 
     <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
         <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1484,6 +1479,10 @@
                 <button class="cipher-picker-card" type="button" data-cipher="railfence">
                     <div class="cipher-picker-card-name" data-i18n="rules.railfence.name">柵欄密碼</div>
                     <div class="cipher-picker-card-desc" data-i18n="rules.railfence.desc">將字元按鋸齒形分配到指定數量的軌道上，再依軌道順序重新讀出，打亂字元的排列位置而不改變字元本身。</div>
+                </button>
+                <button class="cipher-picker-card" type="button" data-cipher="columnar">
+                    <div class="cipher-picker-card-name" data-i18n="rules.columnar.name">列移位密碼</div>
+                    <div class="cipher-picker-card-desc" data-i18n="rules.columnar.desc">將字元依序填入指定欄數的表格，再依金鑰字母的排序決定讀取欄位的順序，打亂字元位置而不改變字元本身。</div>
                 </button>
             </div>
         </div>
@@ -1578,6 +1577,9 @@
                     'rules.railfence.name': '柵欄密碼',
                     'rules.railfence.desc': '將字元按鋸齒形分配到指定數量的軌道上，再依軌道順序重新讀出，打亂字元的排列位置而不改變字元本身。',
                     'rules.railfence.railsLabel': '軌道數',
+                    'rules.columnar.name': '列移位密碼',
+                    'rules.columnar.desc': '將字元依序填入指定欄數的表格，再依金鑰字母的排序決定讀取欄位的順序，打亂字元位置而不改變字元本身。',
+                    'rules.columnar.keyLabel': '金鑰',
                     'modal.title': '使用前說明',
                     'modal.item1': '所有加密運算<strong>在瀏覽器本地執行</strong>，不會傳輸任何資料至外部',
                     'modal.item2': '所有密碼相關的輸入<strong>不會被保留</strong>，關閉頁面即消失',
@@ -1592,6 +1594,7 @@
                     'err.hillMatrix': '請填入完整的 2×2 金鑰矩陣',
                     'err.hillInvalid': '金鑰矩陣不可逆，請調整數值',
                     'err.railfenceRails': '請輸入至少 2 條軌道',
+                    'err.columnarKey': '請輸入金鑰',
                     'err.noRules': '請至少新增一條加密規則',
                     'hint.missingUpper': '缺少大寫字母',
                     'hint.missingLower': '缺少小寫字母',
@@ -1652,6 +1655,9 @@
                     'rules.railfence.name': 'Rail Fence Cipher',
                     'rules.railfence.desc': 'Distributes characters across a set number of rails in a zigzag pattern, then reads them off rail by rail. The character values stay the same — only their positions are scrambled.',
                     'rules.railfence.railsLabel': 'Rails',
+                    'rules.columnar.name': 'Columnar Transposition',
+                    'rules.columnar.desc': 'Fills characters row by row into a grid, then reads columns in the order determined by sorting the key letters alphabetically. Character values stay the same — only their positions change.',
+                    'rules.columnar.keyLabel': 'Key',
                     'modal.title': 'Before You Start',
                     'modal.item1': 'All encryption runs <strong>locally in your browser</strong> — no data is sent anywhere',
                     'modal.item2': 'Password inputs are <strong>never stored</strong> and disappear when you close the page',
@@ -1666,6 +1672,7 @@
                     'err.hillMatrix': 'Please fill in the complete 2×2 key matrix',
                     'err.hillInvalid': 'The key matrix is not invertible — please adjust the values',
                     'err.railfenceRails': 'Please enter at least 2 rails',
+                    'err.columnarKey': 'Please enter a key',
                     'err.noRules': 'Please add at least one encryption rule',
                     'hint.missingUpper': 'Missing uppercase letter',
                     'hint.missingLower': 'Missing lowercase letter',
@@ -2230,6 +2237,40 @@
         })();
         // ────────────────────────────────────────────────────────────
 
+        // ── ColumnarCipher ───────────────────────────────────────────
+        const ColumnarCipher = (() => {
+            function encrypt(plaintext, key) {
+                if (!key) return plaintext;
+                const cols = key.length;
+                const rows = Math.ceil(plaintext.length / cols);
+                // 填入 grid，不足補 null
+                const grid = [];
+                for (let r = 0; r < rows; r++) {
+                    grid.push([]);
+                    for (let c = 0; c < cols; c++) {
+                        const idx = r * cols + c;
+                        grid[r].push(idx < plaintext.length ? plaintext[idx] : null);
+                    }
+                }
+                // 依金鑰字母排序決定欄的讀取順序
+                const order = [...key.toUpperCase()]
+                    .map((ch, i) => ({ ch, i }))
+                    .sort((a, b) => a.ch < b.ch ? -1 : a.ch > b.ch ? 1 : a.i - b.i)
+                    .map(o => o.i);
+
+                let result = '';
+                for (const col of order) {
+                    for (let r = 0; r < rows; r++) {
+                        if (grid[r][col] !== null) result += grid[r][col];
+                    }
+                }
+                return result;
+            }
+
+            return { encrypt };
+        })();
+        // ────────────────────────────────────────────────────────────
+
         // ── EncryptionManager ────────────────────────────────────────
         const EncryptionManager = (() => {
             function _applyRule(rule, input, charset, resultEl) {
@@ -2285,12 +2326,15 @@
                     return HillCipher.encrypt(input, a, b, c, d, charset);
                 } else if (type === 'railfence') {
                     const rails = parseInt(params.rails);
-                    if (rails < 2) {
-                        resultEl.textContent = i18n.t('err.railfenceRails');
+                    return RailFenceCipher.encrypt(input, rails);
+                } else if (type === 'columnar') {
+                    const key = params.key || '';
+                    if (!key) {
+                        resultEl.textContent = i18n.t('err.columnarKey');
                         resultEl.style.color = 'var(--text-muted)';
                         return null;
                     }
-                    return RailFenceCipher.encrypt(input, rails);
+                    return ColumnarCipher.encrypt(input, key);
                 }
                 return input;
             }
@@ -2324,11 +2368,9 @@
 
                 // 長度處理：超出部分與前段 XOR（在 charset 內做 index XOR），不足則循環補齊
                 if (result.length > length) {
-                    const cs   = CharsetManager.get();
-                    const csLen = cs.length;
-                    // 確保字元在 charset 內，不在則以 charCode % csLen 映射
+                    const csLen = charset.length;
                     const toIdx = c => {
-                        const i = cs.indexOf(c);
+                        const i = charset.indexOf(c);
                         return i !== -1 ? i : c.charCodeAt(0) % csLen;
                     };
                     const base = result.slice(0, length).split('').map(toIdx);
@@ -2336,7 +2378,7 @@
                     for (let i = 0; i < extra.length; i++) {
                         base[i % length] = (base[i % length] ^ extra[i]) % csLen;
                     }
-                    result = base.map(i => cs[i]).join('');
+                    result = base.map(i => charset[i]).join('');
                 } else {
                     while (result.length < length) result += result;
                     result = result.slice(0, length);
@@ -2484,6 +2526,7 @@
                 playfair:  () => i18n.t('rules.playfair.name'),
                 hill:      () => i18n.t('rules.hill.name'),
                 railfence: () => i18n.t('rules.railfence.name'),
+                columnar:  () => i18n.t('rules.columnar.name'),
             };
 
             const DEFAULT_PARAMS = {
@@ -2493,6 +2536,7 @@
                 playfair: { keyword: '' },
                 hill:      { a: '', b: '', c: '', d: '' },
                 railfence: { rails: '12' },
+                columnar:  { key: '' },
             };
 
             function _genId() {
@@ -2714,7 +2758,7 @@
 
                     const output = document.createElement('output');
                     output.className = 'range-output';
-                    output.textContent = params.rails || '2';
+                    output.textContent = params.rails || '12';
 
                     labelRow.appendChild(lbl);
                     labelRow.appendChild(output);
@@ -2741,6 +2785,25 @@
                     _updateRailRange();
 
                     fg.appendChild(labelRow);
+                    fg.appendChild(inp);
+                    body.appendChild(fg);
+                } else if (type === 'columnar') {
+                    const fg = document.createElement('div');
+                    fg.className = 'form-group';
+                    const lbl = document.createElement('label');
+                    lbl.className = 'form-label';
+                    lbl.textContent = i18n.t('rules.columnar.keyLabel');
+                    const inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.placeholder = 'KEYWORD';
+                    inp.value = params.key || '';
+                    inp.autocomplete = 'off';
+                    inp.style.fontFamily = 'var(--mono)';
+                    inp.addEventListener('input', () => {
+                        params.key = inp.value;
+                        _save();
+                    });
+                    fg.appendChild(lbl);
                     fg.appendChild(inp);
                     body.appendChild(fg);
                 }
