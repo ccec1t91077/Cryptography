@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>密碼加密工具</title>
     <link href="fonts/fonts.css" rel="stylesheet" />
+    <script>
+        // 提前套用暗色模式，避免頁面載入時的白色閃爍
+        (function() {
+            try {
+                const raw = localStorage.getItem(
+                    'pwd-tool_' + (function(url) {
+                        let h = 0;
+                        for (let i = 0; i < url.length; i++) h = (h * 31 + url.charCodeAt(i)) >>> 0;
+                        return h.toString(16);
+                    })(location.origin + location.pathname)
+                );
+                if (raw) {
+                    const store = JSON.parse(raw);
+                    if (store && store.prefs && store.prefs.darkMode === true) {
+                        document.documentElement.classList.add('dark');
+                    }
+                }
+            } catch(e) {}
+        })();
+    </script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,12 +42,52 @@
             --mono: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
             --sans: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
             --result-color: #0c6ef2;
+            --result-bg: #f0f5ff;
+            --result-border: #c3d4f8;
             --step-bg: #f0f4ff;
             --step-border: #c3d4f8;
             --step-color: #0c6ef2;
+            --card-icon-bg: #edf3ff;
+            --card-icon-border: #c3d4f8;
+            --hint-tag-bg: #fff8e6;
+            --hint-tag-border: #f5d87a;
+            --hint-tag-color: #8a6200;
+            --range-output-bg: #edf3ff;
+            --range-output-border: #c3d4f8;
+            --symbol-selected-bg: #edf3ff;
+            --symbol-selected-border: #c3d4f8;
             --radius: 12px;
             --radius-sm: 8px;
             --shadow-card: 0 2px 8px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        html.dark {
+            --bg: #0f0f12;
+            --surface: #1c1c22;
+            --surface2: #26262e;
+            --border: #35353f;
+            --border-focus: #4d8ef5;
+            --accent: #4d8ef5;
+            --accent-hover: #6aa0f7;
+            --text-primary: #e8e6f0;
+            --text-secondary: #9b98ab;
+            --text-muted: #5c5973;
+            --result-color: #7ab3ff;
+            --result-bg: #1a2340;
+            --result-border: #2d3f6b;
+            --step-bg: #1a2340;
+            --step-border: #2d3f6b;
+            --step-color: #7ab3ff;
+            --card-icon-bg: #1a2340;
+            --card-icon-border: #2d3f6b;
+            --hint-tag-bg: #2a2010;
+            --hint-tag-border: #5a4a10;
+            --hint-tag-color: #d4a830;
+            --range-output-bg: #1a2340;
+            --range-output-border: #2d3f6b;
+            --symbol-selected-bg: #1a2340;
+            --symbol-selected-border: #2d3f6b;
+            --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
         }
 
         body {
@@ -40,6 +100,7 @@
             align-items: flex-start;
             justify-content: center;
             -webkit-font-smoothing: antialiased;
+            transition: background 0.15s ease, color 0.15s ease;
         }
 
         .layout {
@@ -80,6 +141,10 @@
         .panel-head-icon.blue { background: #edf3ff; }
         .panel-head-icon.indigo { background: #f0eeff; }
         .panel-head-icon.teal { background: #e6f7f4; }
+
+        html.dark .panel-head-icon.blue { background: #1a2340; }
+        html.dark .panel-head-icon.indigo { background: #1e1a38; }
+        html.dark .panel-head-icon.teal { background: #0f2420; }
 
         .panel-head h2 {
             font-size: 14px;
@@ -136,8 +201,8 @@
             justify-content: center;
             width: 52px;
             height: 52px;
-            background: #edf3ff;
-            border: 1px solid #c3d4f8;
+            background: var(--card-icon-bg);
+            border: 1px solid var(--card-icon-border);
             border-radius: 14px;
             font-size: 22px;
             margin-bottom: 13px;
@@ -181,7 +246,7 @@
             font-size: 14px;
             color: var(--text-primary);
             outline: none;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
             font-family: var(--mono);
         }
 
@@ -195,7 +260,7 @@
         input[type="text"]:hover:not(:focus),
         input[type="password"]:hover:not(:focus),
         input[type="number"]:hover:not(:focus) {
-            border-color: #bbbbc8;
+            border-color: var(--text-muted);
         }
 
         input[type="text"]:disabled,
@@ -236,11 +301,11 @@
             font-family: var(--mono);
             color: var(--text-primary);
             cursor: pointer;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
         }
 
         .custom-select-trigger:hover {
-            border-color: #bbbbc8;
+            border-color: var(--text-muted);
         }
 
         .custom-select.is-open .custom-select-trigger {
@@ -253,7 +318,7 @@
         .custom-select-trigger svg {
             flex-shrink: 0;
             color: var(--text-muted);
-            transition: transform 0.2s;
+            transition: transform 0.2s ease;
         }
 
         .custom-select.is-open .custom-select-trigger svg {
@@ -295,7 +360,7 @@
             font-family: var(--mono);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: background 0.1s, color 0.1s;
+            transition: background 0.15s ease, color 0.15s ease;
         }
 
         .custom-select-option:hover {
@@ -304,7 +369,7 @@
         }
 
         .custom-select-option.is-selected {
-            background: #edf3ff;
+            background: var(--symbol-selected-bg);
             color: var(--accent);
             font-weight: 600;
         }
@@ -344,7 +409,7 @@
             font-style: normal;
             flex-shrink: 0;
             user-select: none;
-            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
             overflow: hidden;
             text-indent: -9999px;
         }
@@ -365,8 +430,8 @@
         }
 
         .hint-wrap:hover .hint-icon {
-            background: #edf3ff;
-            border-color: #c3d4f8;
+            background: var(--symbol-selected-bg);
+            border-color: var(--symbol-selected-border);
             color: var(--accent);
         }
 
@@ -376,7 +441,7 @@
             left: 50%;
             transform: translateX(-50%);
             background: var(--text-primary);
-            color: #fff;
+            color: var(--bg);
             font-size: 12px;
             font-weight: 400;
             line-height: 1.55;
@@ -386,7 +451,7 @@
             white-space: normal;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.15s;
+            transition: opacity 0.15s ease;
             z-index: 100;
             letter-spacing: 0;
             text-transform: none;
@@ -418,7 +483,7 @@
             cursor: pointer;
             font-family: var(--sans);
             letter-spacing: -0.01em;
-            transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+            transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
             margin-top: 4px;
             box-shadow: 0 1px 3px rgba(12,110,242,0.25);
         }
@@ -442,8 +507,8 @@
 
         .result-box {
             position: relative;
-            background: #f0f5ff;
-            border: 1px solid #c3d4f8;
+            background: var(--result-bg);
+            border: 1px solid var(--result-border);
             border-radius: var(--radius-sm);
             padding: 13px 52px 13px 14px;
             font-size: 13px;
@@ -469,14 +534,14 @@
             justify-content: center;
             cursor: pointer;
             color: var(--text-muted);
-            transition: color 0.15s, border-color 0.15s, background 0.15s;
+            transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
             flex-shrink: 0;
         }
 
         .copy-btn:hover {
             color: var(--accent);
-            border-color: #c3d4f8;
-            background: #edf3ff;
+            border-color: var(--result-border);
+            background: var(--result-bg);
         }
 
         .auto-fill-group {
@@ -515,9 +580,9 @@
             font-family: var(--sans);
             padding: 2px 8px;
             border-radius: 4px;
-            background: #fff8e6;
-            border: 1px solid #f5d87a;
-            color: #8a6200;
+            background: var(--hint-tag-bg);
+            border: 1px solid var(--hint-tag-border);
+            color: var(--hint-tag-color);
         }
 
         .rule-item {
@@ -578,8 +643,8 @@
 
         .rule-details.is-open .hint-icon,
         .hint-icon.clickable:hover {
-            background: #edf3ff;
-            border-color: #c3d4f8;
+            background: var(--symbol-selected-bg);
+            border-color: var(--symbol-selected-border);
             color: var(--accent);
         }
 
@@ -651,7 +716,7 @@
             padding: 3px 10px;
             cursor: pointer;
             font-family: var(--sans);
-            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -664,9 +729,9 @@
         }
 
         .symbol-toggle-all:hover {
-            border-color: #c3d4f8;
+            border-color: var(--symbol-selected-border);
             color: var(--accent);
-            background: #edf3ff;
+            background: var(--symbol-selected-bg);
         }
 
         .symbol-grid {
@@ -689,7 +754,7 @@
             color: var(--text-secondary);
             cursor: pointer;
             user-select: none;
-            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
         }
 
         .symbol-chip input[type="checkbox"] {
@@ -697,13 +762,13 @@
         }
 
         .symbol-chip:has(input:checked) {
-            background: #edf3ff;
-            border-color: #c3d4f8;
+            background: var(--symbol-selected-bg);
+            border-color: var(--symbol-selected-border);
             color: var(--accent);
         }
 
         .symbol-chip:hover {
-            border-color: #c3d4f8;
+            border-color: var(--symbol-selected-border);
             color: var(--accent);
         }
 
@@ -730,8 +795,8 @@
             font-weight: 700;
             font-family: var(--mono);
             color: var(--accent);
-            background: #edf3ff;
-            border: 1px solid #c3d4f8;
+            background: var(--range-output-bg);
+            border: 1px solid var(--range-output-border);
             border-radius: 5px;
             padding: 1px 8px;
             min-width: 32px;
@@ -759,7 +824,7 @@
             border: 2px solid #fff;
             box-shadow: 0 1px 4px rgba(12,110,242,0.3);
             cursor: pointer;
-            transition: box-shadow 0.15s;
+            transition: box-shadow 0.15s ease;
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
@@ -797,7 +862,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.15s;
+            transition: color 0.15s ease;
         }
 
         .input-action-btn:hover {
@@ -826,6 +891,36 @@
             text-align: right;
             line-height: 1.6;
         }
+
+        .dark-toggle {
+            position: fixed;
+            bottom: 16px;
+            left: 20px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+            z-index: 500;
+        }
+
+        .dark-toggle:hover {
+            color: var(--accent);
+            border-color: var(--symbol-selected-border);
+            background: var(--symbol-selected-bg);
+        }
+
+        .dark-toggle .icon-sun { display: none; }
+        .dark-toggle .icon-moon { display: block; }
+        html.dark .dark-toggle .icon-sun { display: block; }
+        html.dark .dark-toggle .icon-moon { display: none; }
 
         .first-use-modal {
             display: none;
@@ -911,6 +1006,12 @@
             margin-top: 1px;
         }
 
+        html.dark .first-use-list-icon {
+            background: #0f2a1e;
+            border-color: #1a4a30;
+            color: #4db87a;
+        }
+
         .first-use-note {
             display: flex;
             align-items: flex-start;
@@ -942,7 +1043,7 @@
             color: #fff;
             cursor: pointer;
             font-family: var(--sans);
-            transition: background 0.15s;
+            transition: background 0.15s ease;
         }
 
         .first-use-btn:hover {
@@ -1260,7 +1361,24 @@
 
     </div>
 
-    <div class="app-version">v1.0.0<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.1.0<br>© 2026 ccec1t91077</div>
+
+    <button class="dark-toggle" id="dark-toggle" type="button" title="切換暗色模式">
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+    </button>
 
     <div class="first-use-modal" id="first-use-modal">
         <div class="first-use-overlay"></div>
@@ -1457,6 +1575,30 @@
 
         FirstUseNotice.init();
         // ────────────────────────────────────────────────────────────        // ────────────────────────────────────────────────────────────
+
+        // ── DarkMode ─────────────────────────────────────────────────
+        const DarkMode = (() => {
+            const btn = document.getElementById('dark-toggle');
+
+            function _apply(dark) {
+                document.documentElement.classList.toggle('dark', dark);
+            }
+
+            function init() {
+                const saved = StorageManager.get('prefs.darkMode', false);
+                _apply(saved);
+                btn.addEventListener('click', () => {
+                    const next = !document.documentElement.classList.contains('dark');
+                    _apply(next);
+                    StorageManager.set('prefs.darkMode', next);
+                });
+            }
+
+            return { init };
+        })();
+
+        DarkMode.init();
+        // ────────────────────────────────────────────────────────────
 
         // ── PasswordVisibility ───────────────────────────────────────
         const PasswordVisibility = (() => {
