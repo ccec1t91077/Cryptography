@@ -2,7 +2,7 @@
 
 將明文密碼透過古典密碼學演算法加密，產生可重現的強密碼，用於網站登入。
 
-[English](docs/README.en.md)
+> 📖 [English Documentation](docs/README.en.md)
 
 ---
 
