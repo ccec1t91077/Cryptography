@@ -777,9 +777,16 @@
             bottom: 16px;
             left: 20px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-start;
             gap: 8px;
             z-index: 500;
+        }
+
+        .bottom-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .dark-toggle {
@@ -1283,6 +1290,48 @@
         .rule-card-body .form-label {
             margin-bottom: 6px;
         }
+
+        /* ── Guide Notice ─────────────────────────────────────────── */
+        .guide-notice {
+            padding: 12px 14px;
+            background: var(--hint-tag-bg);
+            border: 1px solid var(--hint-tag-border);
+            border-radius: var(--radius-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .guide-notice-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--hint-tag-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .guide-notice-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .guide-notice-list li {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .guide-notice-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--hint-tag-color);
+        }
         /* ─────────────────────────────────────────────────────────── */
     </style>
 </head>
@@ -1312,6 +1361,17 @@
                     <div class="step-text" data-i18n="guide.step4">點擊按鈕產生<strong>加密密碼</strong>，複製後用於網站登入。</div>
                 </div>
 
+            </div>
+            <div class="panel-body" style="padding-top: 16px; padding-bottom: 20px; border-top: 1px solid var(--border);">
+                <div class="guide-notice">
+                    <div class="guide-notice-title" data-i18n="guide.notice.title">⚠ 使用前請注意</div>
+                    <ul class="guide-notice-list">
+                        <li data-i18n="guide.notice.item1">本工具產生確定性密碼——相同的明文密碼、Salt 與規則，每次都會產出相同結果。</li>
+                        <li data-i18n="guide.notice.item2">加密規則與參數會自動儲存於此瀏覽器，關閉頁面或重新整理後仍可還原；若透過瀏覽器清除網站資料，規則將一併被刪除。</li>
+                        <li data-i18n="guide.notice.item3">本工具不負責還原密碼，請自行妥善保管明文密碼、Salt 值與加密規則參數。</li>
+                        <li data-i18n="guide.notice.item4">若遺失上述任一項目，將無法重新產生相同的密碼。</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -1458,35 +1518,38 @@
 
     </div>
 
-    <div class="app-version">v1.3.3<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.3.4<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
-        <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
-            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="5"/>
-                <line x1="12" y1="1" x2="12" y2="3"/>
-                <line x1="12" y1="21" x2="12" y2="23"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                <line x1="1" y1="12" x2="3" y2="12"/>
-                <line x1="21" y1="12" x2="23" y2="12"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-        </button>
+        <div class="bottom-bar-row">
+            <a class="github-btn" href="https://github.com/ccec1t91077/Cryptography" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+            </a>
+        </div>
+        <div class="bottom-bar-row">
+            <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
+                <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+            </button>
 
-        <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">
-            <span class="lang-opt" id="lang-opt-zh">繁中</span>
-            <span class="lang-sep">/</span>
-            <span class="lang-opt" id="lang-opt-en">EN</span>
-        </button>
-
-        <a class="github-btn" href="https://github.com/ccec1t91077/Cryptography" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-        </a>
+            <button class="lang-toggle" id="lang-toggle" type="button" aria-label="Switch language">
+                <span class="lang-opt" id="lang-opt-zh">繁中</span>
+                <span class="lang-sep">/</span>
+                <span class="lang-opt" id="lang-opt-en">EN</span>
+            </button>
+        </div>
     </div>
 
     <div class="cipher-picker-modal" id="cipher-picker-modal">
@@ -1573,6 +1636,11 @@
                     'guide.step2': '輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。',
                     'guide.step3': '視需要填入 <strong>Salt</strong>、調整<strong>特殊符號</strong>、<strong>密碼長度</strong>與<strong>自動補充字元</strong>選項。',
                     'guide.step4': '點擊按鈕產生<strong>加密密碼</strong>，複製後用於網站登入。',
+                    'guide.notice.title': '⚠ 使用前請注意',
+                    'guide.notice.item1': '本工具產生確定性密碼——相同的明文密碼、Salt 與規則，每次都會產出相同結果。',
+                    'guide.notice.item2': '加密規則與參數會自動儲存於此瀏覽器，關閉頁面或重新整理後仍可還原；若透過瀏覽器清除網站資料，規則將一併被刪除。',
+                    'guide.notice.item3': '本工具不負責還原密碼，請自行妥善保管明文密碼、Salt 值與加密規則參數。',
+                    'guide.notice.item4': '若遺失上述任一項目，將無法重新產生相同的密碼。',
                     'tool.title': '密碼加密工具',
                     'tool.cardTitle': '產生登入密碼',
                     'tool.cardSub': '將明文密碼加密成實際用於登入的強密碼',
@@ -1650,6 +1718,11 @@
                     'guide.step2': 'Enter the <strong>Password</strong> you keep in your notes — this is your plain-text password before encryption.',
                     'guide.step3': 'Optionally provide a <strong>Salt</strong>, and adjust the <strong>special characters</strong>, <strong>password length</strong>, and <strong>auto-fill</strong> options as needed.',
                     'guide.step4': 'Click the button to generate your <strong>encrypted password</strong>, then copy and use it to log in.',
+                    'guide.notice.title': '⚠ Before You Start',
+                    'guide.notice.item1': 'This tool generates deterministic passwords — the same plain-text password, Salt, and rules will always produce the same result.',
+                    'guide.notice.item2': 'Your encryption rules and parameters are automatically saved in this browser and will be restored after a page refresh. Clearing your browser\'s site data will delete them.',
+                    'guide.notice.item3': 'This tool cannot recover your password. Please keep your plain-text password, Salt value, and encryption rules safe.',
+                    'guide.notice.item4': 'If any of the above is lost, you will not be able to regenerate the same password.',
                     'tool.title': 'Password Encryption Tool',
                     'tool.cardTitle': 'Generate Login Password',
                     'tool.cardSub': 'Encrypt a plain-text password into a strong password for login',
