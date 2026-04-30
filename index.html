@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n-title>密碼加密工具</title>
+    <title>密碼加密工具</title>
     <link href="fonts/fonts.css" rel="stylesheet" />
     <script>
         // 提前套用暗色模式，避免頁面載入時的白色閃爍
@@ -1421,7 +1421,7 @@
 
     </div>
 
-    <div class="app-version">v1.3.0<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.3.1<br>© 2026 ccec1t91077</div>
 
     <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
         <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1562,8 +1562,8 @@
                     'rules.caesar.shiftPlaceholder': '例如：3',
                     'rules.affine.name': '仿射密碼',
                     'rules.affine.descPlain': '透過兩個數字對密碼進行雙重混淆，讓加密結果比單純位移更難被猜測。乘數決定字元跳躍的幅度，位移量決定起始偏移的距離，兩者搭配使用讓每個字元的變換更加複雜。',
-                    'rules.affine.multiplierLabel': '乘數 a',
-                    'rules.affine.shiftLabel': '位移量 b',
+                    'rules.affine.multiplierLabel': '乘數',
+                    'rules.affine.shiftLabel': '位移量',
                     'rules.affine.shiftPlaceholder': '例如：8',
                     'rules.vigenere.name': '維吉尼亞密碼',
                     'rules.vigenere.desc': '使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。',
@@ -1640,8 +1640,8 @@
                     'rules.caesar.shiftPlaceholder': 'e.g. 3',
                     'rules.affine.name': 'Affine Cipher',
                     'rules.affine.descPlain': 'Uses two numbers to apply a double transformation. The multiplier controls how far each character jumps, while the shift sets the starting offset. Together they make each character\'s transformation more complex.',
-                    'rules.affine.multiplierLabel': 'Multiplier a',
-                    'rules.affine.shiftLabel': 'Shift b',
+                    'rules.affine.multiplierLabel': 'Multiplier',
+                    'rules.affine.shiftLabel': 'Shift',
                     'rules.affine.shiftPlaceholder': 'e.g. 8',
                     'rules.vigenere.name': 'Vigenère Cipher',
                     'rules.vigenere.desc': 'Uses a custom key string so each character is shifted by a different amount, preventing patterns from being detected. A longer, more random key makes the output harder to crack.',
@@ -1885,6 +1885,7 @@
                 const next = i18n.getLang() === 'zh-TW' ? 'en' : 'zh-TW';
                 i18n.setLang(next);
                 StorageManager.set('prefs.lang', next);
+                RuleBuilder.refreshNames();
             });
         })();
         // ────────────────────────────────────────────────────────────
@@ -2596,6 +2597,7 @@
                 delBtn.type = 'button';
                 delBtn.textContent = '×';
                 delBtn.title = i18n.t('rules.deleteRule');
+                delBtn.dataset.i18nCard = 'title:rules.deleteRule';
                 delBtn.addEventListener('click', () => {
                     removeRule(id);
                 });
@@ -2614,9 +2616,11 @@
                     const lbl = document.createElement('label');
                     lbl.className = 'form-label';
                     lbl.textContent = i18n.t('rules.caesar.shiftLabel');
+                    lbl.dataset.i18nCard = 'text:rules.caesar.shiftLabel';
                     const inp = document.createElement('input');
                     inp.type = 'number';
                     inp.placeholder = i18n.t('rules.caesar.shiftPlaceholder') || '例如：3';
+                    inp.dataset.i18nCard = 'placeholder:rules.caesar.shiftPlaceholder';
                     inp.value = params.shift !== undefined ? params.shift : '';
                     inp.autocomplete = 'off';
                     inp.addEventListener('input', () => {
@@ -2634,6 +2638,7 @@
                     const lblA = document.createElement('label');
                     lblA.className = 'form-label';
                     lblA.textContent = i18n.t('rules.affine.multiplierLabel');
+                    lblA.dataset.i18nCard = 'text:rules.affine.multiplierLabel';
 
                     const selectWrap = document.createElement('div');
                     selectWrap.className = 'custom-select';
@@ -2663,9 +2668,11 @@
                     const lblB = document.createElement('label');
                     lblB.className = 'form-label';
                     lblB.textContent = i18n.t('rules.affine.shiftLabel');
+                    lblB.dataset.i18nCard = 'text:rules.affine.shiftLabel';
                     const inpB = document.createElement('input');
                     inpB.type = 'number';
                     inpB.placeholder = i18n.t('rules.affine.shiftPlaceholder') || '例如：8';
+                    inpB.dataset.i18nCard = 'placeholder:rules.affine.shiftPlaceholder';
                     inpB.value = params.b !== undefined ? params.b : '';
                     inpB.autocomplete = 'off';
                     inpB.addEventListener('input', () => {
@@ -2687,6 +2694,7 @@
                     const lbl = document.createElement('label');
                     lbl.className = 'form-label';
                     lbl.textContent = i18n.t('rules.vigenere.keyLabel');
+                    lbl.dataset.i18nCard = 'text:rules.vigenere.keyLabel';
                     const inp = document.createElement('input');
                     inp.type = 'text';
                     inp.placeholder = 'SECRET';
@@ -2707,6 +2715,7 @@
                     const lbl = document.createElement('label');
                     lbl.className = 'form-label';
                     lbl.textContent = i18n.t('rules.playfair.keyLabel');
+                    lbl.dataset.i18nCard = 'text:rules.playfair.keyLabel';
                     const inp = document.createElement('input');
                     inp.type = 'text';
                     inp.placeholder = 'KEYWORD';
@@ -2727,6 +2736,7 @@
                     const lbl = document.createElement('div');
                     lbl.className = 'form-label';
                     lbl.textContent = i18n.t('rules.hill.matrixLabel');
+                    lbl.dataset.i18nCard = 'text:rules.hill.matrixLabel';
                     const matrix = document.createElement('div');
                     matrix.className = 'hill-matrix';
                     ['a','b','c','d'].forEach(k => {
@@ -2755,6 +2765,7 @@
                     lbl.className = 'form-label';
                     lbl.style.marginBottom = '0';
                     lbl.textContent = i18n.t('rules.railfence.railsLabel');
+                    lbl.dataset.i18nCard = 'text:rules.railfence.railsLabel';
 
                     const output = document.createElement('output');
                     output.className = 'range-output';
@@ -2793,6 +2804,7 @@
                     const lbl = document.createElement('label');
                     lbl.className = 'form-label';
                     lbl.textContent = i18n.t('rules.columnar.keyLabel');
+                    lbl.dataset.i18nCard = 'text:rules.columnar.keyLabel';
                     const inp = document.createElement('input');
                     inp.type = 'text';
                     inp.placeholder = 'KEYWORD';
@@ -2916,10 +2928,6 @@
                 });
             }
 
-            function serialize() {
-                return _rules.map(r => ({ type: r.type, params: { ...r.params } }));
-            }
-
             function restore(data) {
                 if (!Array.isArray(data)) return;
                 _rules = data.map(item => ({
@@ -2939,7 +2947,24 @@
                 }
             }
 
-            return { addRule, removeRule, getRules, refreshAllAffineSelects, serialize, restore, init };
+            function refreshNames() {
+                document.querySelectorAll('#rule-list .rule-card').forEach(card => {
+                    const type = _rules.find(r => r.id === card.dataset.id)?.type;
+                    if (type && CIPHER_NAMES[type]) {
+                        const badge = card.querySelector('.rule-card-name');
+                        if (badge) badge.textContent = CIPHER_NAMES[type]();
+                    }
+                    card.querySelectorAll('[data-i18n-card]').forEach(el => {
+                        const [attr, key] = el.dataset.i18nCard.split(':');
+                        const val = i18n.t(key);
+                        if (attr === 'text') el.textContent = val;
+                        else if (attr === 'placeholder') el.placeholder = val;
+                        else if (attr === 'title') el.title = val;
+                    });
+                });
+            }
+
+            return { addRule, removeRule, getRules, refreshAllAffineSelects, restore, init, refreshNames };
         })();
 
         // ── Add Rule UI ──────────────────────────────────────────────
