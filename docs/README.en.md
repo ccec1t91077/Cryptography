@@ -2,7 +2,7 @@
 
 Encrypt a plain-text password using classical cipher algorithms to generate a reproducible strong password for website login.
 
-[繁體中文](../README.md)
+> 📖 [繁體中文文檔](../README.md)
 
 ---
 
