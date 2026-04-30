@@ -160,4 +160,4 @@ This tool is designed to **convert a memorable plain-text password into a hard-t
 
 ## License
 
-© 2026 ccec1t91077 — v1.3.1
+© 2026 ccec1t91077 — v1.3.5
