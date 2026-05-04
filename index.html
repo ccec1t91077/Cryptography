@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>密碼加密工具</title>
+    <title>確定性密碼產生器 | 離線、無帳號、可重現</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="apple-touch-icon" href="favicon.png" />
 
     <!-- SEO -->
-    <meta name="description" content="將明文密碼透過古典密碼學演算法加密，產生可重現的強密碼，用於網站登入。所有運算在瀏覽器本地執行，不傳輸任何資料。" />
-    <meta name="keywords" content="密碼加密, 古典密碼, 凱薩密碼, 仿射密碼, 維吉尼亞密碼, 波雷費密碼, 希爾密碼, 柵欄密碼, 列移位密碼, password encryption, cipher" />
+    <meta name="description" content="不同於隨機密碼管理器，本工具透過古典密碼演算法將明文密碼加密，相同輸入永遠產生相同結果。無需帳號、無需同步、完全離線，不怕服務關閉或資料外洩。" />
+    <meta name="keywords" content="確定性密碼, 可重現密碼, 離線密碼產生器, 不需儲存密碼, 密碼加密工具, deterministic password generator, reproducible password, offline password tool, no account password manager, 古典密碼加密, 凱薩密碼, 維吉尼亞密碼" />
     <meta name="author" content="ccec1t91077" />
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="密碼加密工具" />
-    <meta property="og:description" content="將明文密碼透過古典密碼學演算法加密，產生可重現的強密碼，用於網站登入。所有運算在瀏覽器本地執行，不傳輸任何資料。" />
+    <meta property="og:title" content="確定性密碼產生器 | 離線、無帳號、可重現" />
+    <meta property="og:description" content="不同於隨機密碼管理器，本工具透過古典密碼演算法將明文密碼加密，相同輸入永遠產生相同結果。無需帳號、無需同步、完全離線，不怕服務關閉或資料外洩。" />
     <meta property="og:image" content="favicon.png" />
 
     <link href="fonts/fonts.css" rel="stylesheet" />
+    <script src="libs/zxcvbn.js"></script>
     <script>
         // 提前套用暗色模式，避免頁面載入時的白色閃爍
         (function() {
@@ -250,6 +251,12 @@
             color: var(--text-secondary);
             letter-spacing: 0.02em;
             margin-bottom: 7px;
+        }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 5px;
         }
 
         input[type="text"],
@@ -571,6 +578,31 @@
             background: var(--hint-tag-bg);
             border: 1px solid var(--hint-tag-border);
             color: var(--hint-tag-color);
+        }
+
+        .strength-bar-wrap {
+            margin-top: 10px;
+        }
+
+        .strength-bar-track {
+            height: 5px;
+            border-radius: 3px;
+            background: var(--border);
+            overflow: hidden;
+        }
+
+        .strength-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .strength-bar-label {
+            font-size: 11px;
+            font-family: var(--sans);
+            margin-top: 4px;
+            color: var(--text-muted);
         }
 
         .symbol-group {
@@ -1501,6 +1533,12 @@
                         <span></span>
                     </div>
                     <div class="result-hints" id="result-hints"></div>
+                    <div class="strength-bar-wrap" id="strength-bar-wrap">
+                        <div class="strength-bar-track">
+                            <div class="strength-bar-fill" id="strength-bar-fill"></div>
+                        </div>
+                        <div class="strength-bar-label" id="strength-bar-label"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1518,7 +1556,7 @@
 
     </div>
 
-    <div class="app-version">v1.3.5<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.3.6<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
         <div class="bottom-bar-row">
@@ -1630,7 +1668,7 @@
         const i18n = (() => {
             const translations = {
                 'zh-TW': {
-                    pageTitle: '密碼加密工具',
+                    pageTitle: '確定性密碼產生器 | 離線、無帳號、可重現',
                     'guide.title': '使用說明',
                     'guide.step1': '在右側點擊「新增規則」，選擇加密方式並填入參數，可新增多條規則依序套用。',
                     'guide.step2': '輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。',
@@ -1679,12 +1717,14 @@
                     'rules.vigenere.name': '維吉尼亞密碼',
                     'rules.vigenere.desc': '使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。',
                     'rules.vigenere.keyLabel': '金鑰',
+                    'rules.vigenere.keyHint': '注意：金鑰中不在字元表內的字元會被忽略',
                     'rules.playfair.name': '波雷費密碼',
                     'rules.playfair.desc': '透過一組關鍵字將字元打亂成一張對照表，再以兩個字元為一組進行替換。關鍵字決定對照表的排列方式，不同的關鍵字會產生完全不同的加密結果。',
                     'rules.playfair.keyLabel': '關鍵字',
                     'rules.hill.name': '希爾密碼',
                     'rules.hill.desc': '使用四個數字組成的金鑰，將密碼中的字元兩兩一組進行混合運算，讓每對字元互相影響彼此的加密結果，難以單獨還原。',
                     'rules.hill.matrixLabel': '金鑰矩陣（2×2）',
+                    'rules.hill.matrixHint': '注意：(a×d)-(b×c) 的結果不可被字元表長度（目前 {n} 個字元）整除',
                     'rules.railfence.name': '柵欄密碼',
                     'rules.railfence.desc': '將字元按鋸齒形分配到指定數量的軌道上，再依軌道順序重新讀出，打亂字元的排列位置而不改變字元本身。',
                     'rules.railfence.railsLabel': '軌道數',
@@ -1710,9 +1750,15 @@
                     'hint.missingLower': '缺少小寫字母',
                     'hint.missingDigit': '缺少數字',
                     'hint.missingSymbol': '缺少特殊符號',
+                    'strength.veryWeak':   '強度：非常弱',
+                    'strength.weak':       '強度：弱',
+                    'strength.fair':       '強度：普通',
+                    'strength.strong':     '強度：強',
+                    'strength.veryStrong': '強度：非常強',
+                    'strength.label':      '強度：',
                 },
                 'en': {
-                    pageTitle: 'Password Encryption Tool',
+                    pageTitle: 'Deterministic Password Generator — Same Input Always Produces the Same Password',
                     'guide.title': 'How to Use',
                     'guide.step1': 'Click <strong>Add Rule</strong> on the right, choose a cipher, and fill in its parameters. You can add multiple rules to apply them in sequence.',
                     'guide.step2': 'Enter the <strong>Password</strong> you keep in your notes — this is your plain-text password before encryption.',
@@ -1761,12 +1807,14 @@
                     'rules.vigenere.name': 'Vigenère Cipher',
                     'rules.vigenere.desc': 'Uses a custom key string so each character is shifted by a different amount, preventing patterns from being detected. A longer, more random key makes the output harder to crack.',
                     'rules.vigenere.keyLabel': 'Key',
+                    'rules.vigenere.keyHint': 'Note: Characters in the key that are not in the charset will be ignored',
                     'rules.playfair.name': 'Playfair Cipher',
                     'rules.playfair.desc': 'Uses a keyword to scramble characters into a lookup table, then encrypts them in pairs. The keyword determines the table layout — different keywords produce completely different results.',
                     'rules.playfair.keyLabel': 'Keyword',
                     'rules.hill.name': 'Hill Cipher',
                     'rules.hill.desc': 'Uses a key made of four numbers to mix pairs of characters through matrix multiplication. Each pair of characters influences the other\'s encrypted output, making individual characters hard to recover.',
                     'rules.hill.matrixLabel': 'Key matrix (2×2)',
+                    'rules.hill.matrixHint': 'Note: (a×d)-(b×c) must not be divisible by the charset length (currently {n} characters)',
                     'rules.railfence.name': 'Rail Fence Cipher',
                     'rules.railfence.desc': 'Distributes characters across a set number of rails in a zigzag pattern, then reads them off rail by rail. The character values stay the same — only their positions are scrambled.',
                     'rules.railfence.railsLabel': 'Rails',
@@ -1792,6 +1840,12 @@
                     'hint.missingLower': 'Missing lowercase letter',
                     'hint.missingDigit': 'Missing digit',
                     'hint.missingSymbol': 'Missing special character',
+                    'strength.veryWeak':   'Strength: Very Weak',
+                    'strength.weak':       'Strength: Weak',
+                    'strength.fair':       'Strength: Fair',
+                    'strength.strong':     'Strength: Strong',
+                    'strength.veryStrong': 'Strength: Very Strong',
+                    'strength.label':      'Strength: ',
                 },
             };
 
@@ -1869,14 +1923,11 @@
                 if (raw !== null) {
                     if (_isValidJSON(raw)) {
                         _store = JSON.parse(raw);
-                        console.info('[StorageManager] 已載入儲存資料', _store);
                     } else {
-                        console.warn('[StorageManager] 資料損毀，重置為空物件');
                         _store = {};
                         _persist();
                     }
                 } else {
-                    console.info('[StorageManager] 無儲存資料，初始化空物件');
                     _store = {};
                     _persist();
                 }
@@ -2000,6 +2051,7 @@
                 i18n.setLang(next);
                 StorageManager.set('prefs.lang', next);
                 RuleBuilder.refreshNames();
+                EncryptionManager.refreshLang();
             });
         })();
         // ────────────────────────────────────────────────────────────
@@ -2057,6 +2109,10 @@
             const checked = [...chips].filter(c => c.checked).map(c => c.value);
             StorageManager.set('prefs.symbols', checked);
             RuleBuilder.refreshAllAffineSelects();
+            // 更新希爾密碼的字元表長度提示
+            document.querySelectorAll('._charset-hint').forEach(el => {
+                if (typeof el._updateCharsetHint === 'function') el._updateCharsetHint();
+            });
         }
         selectAll.addEventListener('change', () => {
             chips.forEach(c => c.checked = selectAll.checked);
@@ -2388,13 +2444,28 @@
 
         // ── EncryptionManager ────────────────────────────────────────
         const EncryptionManager = (() => {
+            let _lastScore = null;
+            let _lastErrKey = null;
+
+            function _resetStrength() {
+                _lastScore = null;
+                const fill  = document.getElementById('strength-bar-fill');
+                const label = document.getElementById('strength-bar-label');
+                if (fill)  fill.style.width = '0%';
+                if (label) label.textContent = i18n.t('strength.label') + '-';
+            }
+
+            function _setError(resultEl, errKey) {
+                _lastErrKey = errKey;
+                resultEl.textContent = i18n.t(errKey);
+                resultEl.style.color = 'var(--text-muted)';
+            }
             function _applyRule(rule, input, charset, resultEl) {
                 const { type, params } = rule;
                 if (type === 'caesar') {
                     const shift = parseInt(params.shift);
                     if (isNaN(shift)) {
-                        resultEl.textContent = i18n.t('err.caesarShift');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.caesarShift');
                         return null;
                     }
                     return CaesarCipher.encrypt(input, shift, charset);
@@ -2402,24 +2473,21 @@
                     const a = parseInt(params.a);
                     const b = parseInt(params.b);
                     if (isNaN(b)) {
-                        resultEl.textContent = i18n.t('err.affineB');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.affineB');
                         return null;
                     }
                     return AffineCipher.encrypt(input, a, b, charset);
                 } else if (type === 'vigenere') {
                     const key = params.key || '';
                     if (!key) {
-                        resultEl.textContent = i18n.t('err.vigenereKey');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.vigenereKey');
                         return null;
                     }
                     return VigenereCipher.encrypt(input, key, charset);
                 } else if (type === 'playfair') {
                     const key = params.keyword || '';
                     if (!key) {
-                        resultEl.textContent = i18n.t('err.playfairKey');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.playfairKey');
                         return null;
                     }
                     return PlayfairCipher.encrypt(input, key, charset);
@@ -2429,13 +2497,11 @@
                     const c = parseInt(params.c);
                     const d = parseInt(params.d);
                     if ([a, b, c, d].some(isNaN)) {
-                        resultEl.textContent = i18n.t('err.hillMatrix');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.hillMatrix');
                         return null;
                     }
                     if (!HillCipher.isValidKey(a, b, c, d, charset.length)) {
-                        resultEl.textContent = i18n.t('err.hillInvalid');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.hillInvalid');
                         return null;
                     }
                     return HillCipher.encrypt(input, a, b, c, d, charset);
@@ -2445,8 +2511,7 @@
                 } else if (type === 'columnar') {
                     const key = params.key || '';
                     if (!key) {
-                        resultEl.textContent = i18n.t('err.columnarKey');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.columnarKey');
                         return null;
                     }
                     return ColumnarCipher.encrypt(input, key);
@@ -2465,20 +2530,21 @@
                     resultEl.textContent = '';
                     resultEl.style.color = '';
                     document.getElementById('result-hints').innerHTML = '';
+                    _resetStrength();
                     return;
                 }
 
                 const rules = RuleBuilder.getRules();
                 if (rules.length === 0) {
-                    resultEl.textContent = i18n.t('err.noRules');
-                    resultEl.style.color = 'var(--text-muted)';
+                    _setError(resultEl, 'err.noRules');
+                    _resetStrength();
                     return;
                 }
 
                 let result = password + salt;
                 for (const rule of rules) {
                     result = _applyRule(rule, result, charset, resultEl);
-                    if (result === null) return;
+                    if (result === null) { _resetStrength(); return; }
                 }
 
                 // 長度處理：超出部分與前段 XOR（在 charset 內做 index XOR），不足則循環補齊
@@ -2501,6 +2567,7 @@
 
                 resultEl.textContent = result;
                 resultEl.style.color = '';
+                _lastErrKey = null;
 
                 // ── 自動補充字元 ─────────────────────────────────────
                 const autoUpper  = document.getElementById('auto-upper').checked;
@@ -2582,9 +2649,57 @@
                         hintsEl.appendChild(tag);
                     }
                 });
+
+                // ── zxcvbn 密碼強度評估 ──────────────────────────────
+                const strengthFill  = document.getElementById('strength-bar-fill');
+                const strengthLabel = document.getElementById('strength-bar-label');
+
+                if (typeof zxcvbn === 'function' && result) {
+                    const score = zxcvbn(result).score; // 0–4
+                    _lastScore = score;
+                    const colors = ['#e74c3c', '#e67e22', '#f1c40f', '#2ecc71', '#27ae60'];
+                    const widths = ['20%', '40%', '60%', '80%', '100%'];
+                    const labelKeys = [
+                        'strength.veryWeak',
+                        'strength.weak',
+                        'strength.fair',
+                        'strength.strong',
+                        'strength.veryStrong',
+                    ];
+                    strengthFill.style.width      = widths[score];
+                    strengthFill.style.background = colors[score];
+                    strengthLabel.textContent     = i18n.t(labelKeys[score]);
+                } else {
+                    _resetStrength();
+                }
             }
 
-            return { run };
+            function getLastScore() { return _lastScore; }
+
+            function refreshError() {
+                if (!_lastErrKey) return;
+                const resultEl = document.querySelector('.result-box span');
+                if (resultEl) {
+                    resultEl.textContent = i18n.t(_lastErrKey);
+                }
+            }
+
+            function refreshLang() {
+                refreshError();
+                const lbl = document.getElementById('strength-bar-label');
+                if (!lbl) return;
+                if (_lastScore !== null) {
+                    const labelKeys = [
+                        'strength.veryWeak', 'strength.weak', 'strength.fair',
+                        'strength.strong', 'strength.veryStrong',
+                    ];
+                    lbl.textContent = i18n.t(labelKeys[_lastScore]);
+                } else {
+                    lbl.textContent = i18n.t('strength.label') + '-';
+                }
+            }
+
+            return { run, refreshLang };
         })();
 
         document.querySelector('.btn-primary').addEventListener('click', () => {
@@ -2821,6 +2936,11 @@
                     });
                     fg.appendChild(lbl);
                     fg.appendChild(inp);
+                    const vigHint = document.createElement('div');
+                    vigHint.className = 'form-hint _charset-hint';
+                    vigHint.textContent = i18n.t('rules.vigenere.keyHint');
+                    vigHint.dataset.i18nCard = 'text:rules.vigenere.keyHint';
+                    fg.appendChild(vigHint);
                     body.appendChild(fg);
 
                 } else if (type === 'playfair') {
@@ -2867,6 +2987,16 @@
                     });
                     fg.appendChild(lbl);
                     fg.appendChild(matrix);
+                    const hillHint = document.createElement('div');
+                    hillHint.className = 'form-hint _charset-hint';
+                    const _updateHillHint = () => {
+                        const n = CharsetManager.get().length;
+                        hillHint.textContent = i18n.t('rules.hill.matrixHint').replace('{n}', n);
+                    };
+                    _updateHillHint();
+                    hillHint.dataset.i18nCard = 'text:rules.hill.matrixHint';
+                    hillHint._updateCharsetHint = _updateHillHint;
+                    fg.appendChild(hillHint);
                     body.appendChild(fg);
                 } else if (type === 'railfence') {
                     const fg = document.createElement('div');
@@ -3070,6 +3200,10 @@
                     }
                     card.querySelectorAll('[data-i18n-card]').forEach(el => {
                         const [attr, key] = el.dataset.i18nCard.split(':');
+                        if (attr === 'text' && typeof el._updateCharsetHint === 'function') {
+                            el._updateCharsetHint();
+                            return;
+                        }
                         const val = i18n.t(key);
                         if (attr === 'text') el.textContent = val;
                         else if (attr === 'placeholder') el.placeholder = val;
@@ -3111,6 +3245,7 @@
         })();
 
         RuleBuilder.init();
+        document.getElementById('strength-bar-label').textContent = i18n.t('strength.label') + '-';
         // ────────────────────────────────────────────────────────────
     </script>
 </body>
