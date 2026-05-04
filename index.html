@@ -2051,19 +2051,7 @@
                 i18n.setLang(next);
                 StorageManager.set('prefs.lang', next);
                 RuleBuilder.refreshNames();
-                const lbl = document.getElementById('strength-bar-label');
-                if (lbl) {
-                    const score = EncryptionManager.getLastScore();
-                    if (score !== null) {
-                        const labelKeys = [
-                            'strength.veryWeak', 'strength.weak', 'strength.fair',
-                            'strength.strong', 'strength.veryStrong',
-                        ];
-                        lbl.textContent = i18n.t(labelKeys[score]);
-                    } else {
-                        lbl.textContent = i18n.t('strength.label') + '-';
-                    }
-                }
+                EncryptionManager.refreshLang();
             });
         })();
         // ────────────────────────────────────────────────────────────
@@ -2457,13 +2445,27 @@
         // ── EncryptionManager ────────────────────────────────────────
         const EncryptionManager = (() => {
             let _lastScore = null;
+            let _lastErrKey = null;
+
+            function _resetStrength() {
+                _lastScore = null;
+                const fill  = document.getElementById('strength-bar-fill');
+                const label = document.getElementById('strength-bar-label');
+                if (fill)  fill.style.width = '0%';
+                if (label) label.textContent = i18n.t('strength.label') + '-';
+            }
+
+            function _setError(resultEl, errKey) {
+                _lastErrKey = errKey;
+                resultEl.textContent = i18n.t(errKey);
+                resultEl.style.color = 'var(--text-muted)';
+            }
             function _applyRule(rule, input, charset, resultEl) {
                 const { type, params } = rule;
                 if (type === 'caesar') {
                     const shift = parseInt(params.shift);
                     if (isNaN(shift)) {
-                        resultEl.textContent = i18n.t('err.caesarShift');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.caesarShift');
                         return null;
                     }
                     return CaesarCipher.encrypt(input, shift, charset);
@@ -2471,24 +2473,21 @@
                     const a = parseInt(params.a);
                     const b = parseInt(params.b);
                     if (isNaN(b)) {
-                        resultEl.textContent = i18n.t('err.affineB');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.affineB');
                         return null;
                     }
                     return AffineCipher.encrypt(input, a, b, charset);
                 } else if (type === 'vigenere') {
                     const key = params.key || '';
                     if (!key) {
-                        resultEl.textContent = i18n.t('err.vigenereKey');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.vigenereKey');
                         return null;
                     }
                     return VigenereCipher.encrypt(input, key, charset);
                 } else if (type === 'playfair') {
                     const key = params.keyword || '';
                     if (!key) {
-                        resultEl.textContent = i18n.t('err.playfairKey');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.playfairKey');
                         return null;
                     }
                     return PlayfairCipher.encrypt(input, key, charset);
@@ -2498,13 +2497,11 @@
                     const c = parseInt(params.c);
                     const d = parseInt(params.d);
                     if ([a, b, c, d].some(isNaN)) {
-                        resultEl.textContent = i18n.t('err.hillMatrix');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.hillMatrix');
                         return null;
                     }
                     if (!HillCipher.isValidKey(a, b, c, d, charset.length)) {
-                        resultEl.textContent = i18n.t('err.hillInvalid');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.hillInvalid');
                         return null;
                     }
                     return HillCipher.encrypt(input, a, b, c, d, charset);
@@ -2514,8 +2511,7 @@
                 } else if (type === 'columnar') {
                     const key = params.key || '';
                     if (!key) {
-                        resultEl.textContent = i18n.t('err.columnarKey');
-                        resultEl.style.color = 'var(--text-muted)';
+                        _setError(resultEl, 'err.columnarKey');
                         return null;
                     }
                     return ColumnarCipher.encrypt(input, key);
@@ -2534,20 +2530,21 @@
                     resultEl.textContent = '';
                     resultEl.style.color = '';
                     document.getElementById('result-hints').innerHTML = '';
+                    _resetStrength();
                     return;
                 }
 
                 const rules = RuleBuilder.getRules();
                 if (rules.length === 0) {
-                    resultEl.textContent = i18n.t('err.noRules');
-                    resultEl.style.color = 'var(--text-muted)';
+                    _setError(resultEl, 'err.noRules');
+                    _resetStrength();
                     return;
                 }
 
                 let result = password + salt;
                 for (const rule of rules) {
                     result = _applyRule(rule, result, charset, resultEl);
-                    if (result === null) return;
+                    if (result === null) { _resetStrength(); return; }
                 }
 
                 // 長度處理：超出部分與前段 XOR（在 charset 內做 index XOR），不足則循環補齊
@@ -2570,6 +2567,7 @@
 
                 resultEl.textContent = result;
                 resultEl.style.color = '';
+                _lastErrKey = null;
 
                 // ── 自動補充字元 ─────────────────────────────────────
                 const autoUpper  = document.getElementById('auto-upper').checked;
@@ -2672,15 +2670,36 @@
                     strengthFill.style.background = colors[score];
                     strengthLabel.textContent     = i18n.t(labelKeys[score]);
                 } else {
-                    _lastScore = null;
-                    strengthFill.style.width      = '0%';
-                    strengthLabel.textContent     = i18n.t('strength.label') + '-';
+                    _resetStrength();
                 }
             }
 
             function getLastScore() { return _lastScore; }
 
-            return { run, getLastScore };
+            function refreshError() {
+                if (!_lastErrKey) return;
+                const resultEl = document.querySelector('.result-box span');
+                if (resultEl) {
+                    resultEl.textContent = i18n.t(_lastErrKey);
+                }
+            }
+
+            function refreshLang() {
+                refreshError();
+                const lbl = document.getElementById('strength-bar-label');
+                if (!lbl) return;
+                if (_lastScore !== null) {
+                    const labelKeys = [
+                        'strength.veryWeak', 'strength.weak', 'strength.fair',
+                        'strength.strong', 'strength.veryStrong',
+                    ];
+                    lbl.textContent = i18n.t(labelKeys[_lastScore]);
+                } else {
+                    lbl.textContent = i18n.t('strength.label') + '-';
+                }
+            }
+
+            return { run, refreshLang };
         })();
 
         document.querySelector('.btn-primary').addEventListener('click', () => {
