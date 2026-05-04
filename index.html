@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>密碼加密工具</title>
+    <title>確定性密碼產生器 | 離線、無帳號、可重現</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="apple-touch-icon" href="favicon.png" />
 
     <!-- SEO -->
-    <meta name="description" content="將明文密碼透過古典密碼學演算法加密，產生可重現的強密碼，用於網站登入。所有運算在瀏覽器本地執行，不傳輸任何資料。" />
-    <meta name="keywords" content="密碼加密, 古典密碼, 凱薩密碼, 仿射密碼, 維吉尼亞密碼, 波雷費密碼, 希爾密碼, 柵欄密碼, 列移位密碼, password encryption, cipher" />
+    <meta name="description" content="不同於隨機密碼管理器，本工具透過古典密碼演算法將明文密碼加密，相同輸入永遠產生相同結果。無需帳號、無需同步、完全離線，不怕服務關閉或資料外洩。" />
+    <meta name="keywords" content="確定性密碼, 可重現密碼, 離線密碼產生器, 不需儲存密碼, 密碼加密工具, deterministic password generator, reproducible password, offline password tool, no account password manager, 古典密碼加密, 凱薩密碼, 維吉尼亞密碼" />
     <meta name="author" content="ccec1t91077" />
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="密碼加密工具" />
-    <meta property="og:description" content="將明文密碼透過古典密碼學演算法加密，產生可重現的強密碼，用於網站登入。所有運算在瀏覽器本地執行，不傳輸任何資料。" />
+    <meta property="og:title" content="確定性密碼產生器 | 離線、無帳號、可重現" />
+    <meta property="og:description" content="不同於隨機密碼管理器，本工具透過古典密碼演算法將明文密碼加密，相同輸入永遠產生相同結果。無需帳號、無需同步、完全離線，不怕服務關閉或資料外洩。" />
     <meta property="og:image" content="favicon.png" />
 
     <link href="fonts/fonts.css" rel="stylesheet" />
@@ -1668,7 +1668,7 @@
         const i18n = (() => {
             const translations = {
                 'zh-TW': {
-                    pageTitle: '密碼加密工具',
+                    pageTitle: '確定性密碼產生器 | 離線、無帳號、可重現',
                     'guide.title': '使用說明',
                     'guide.step1': '在右側點擊「新增規則」，選擇加密方式並填入參數，可新增多條規則依序套用。',
                     'guide.step2': '輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。',
@@ -1758,7 +1758,7 @@
                     'strength.label':      '強度：',
                 },
                 'en': {
-                    pageTitle: 'Password Encryption Tool',
+                    pageTitle: 'Deterministic Password Generator — Same Input Always Produces the Same Password',
                     'guide.title': 'How to Use',
                     'guide.step1': 'Click <strong>Add Rule</strong> on the right, choose a cipher, and fill in its parameters. You can add multiple rules to apply them in sequence.',
                     'guide.step2': 'Enter the <strong>Password</strong> you keep in your notes — this is your plain-text password before encryption.',
