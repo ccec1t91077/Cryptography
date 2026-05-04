@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>確定性密碼產生器 | 離線、無帳號、可重現</title>
+    <title>確定性密碼產生器</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -17,7 +17,7 @@
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="確定性密碼產生器 | 離線、無帳號、可重現" />
+    <meta property="og:title" content="確定性密碼產生器" />
     <meta property="og:description" content="不同於隨機密碼管理器，本工具透過古典密碼演算法將明文密碼加密，相同輸入永遠產生相同結果。無需帳號、無需同步、完全離線，不怕服務關閉或資料外洩。" />
     <meta property="og:image" content="favicon.png" />
 
@@ -900,6 +900,7 @@
             justify-content: center;
             color: var(--text-muted);
             text-decoration: none;
+            cursor: pointer;
             transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
         }
 
@@ -1533,7 +1534,7 @@
                         <span></span>
                     </div>
                     <div class="result-hints" id="result-hints"></div>
-                    <div class="strength-bar-wrap" id="strength-bar-wrap">
+                    <div class="strength-bar-wrap">
                         <div class="strength-bar-track">
                             <div class="strength-bar-fill" id="strength-bar-fill"></div>
                         </div>
@@ -1556,9 +1557,14 @@
 
     </div>
 
-    <div class="app-version">v1.3.6<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.3.7<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
+        <div class="bottom-bar-row">
+            <button class="github-btn" id="about-btn" type="button" data-i18n-title="common.aboutBtn" title="關於此工具">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </button>
+        </div>
         <div class="bottom-bar-row">
             <a class="github-btn" href="https://github.com/ccec1t91077/Cryptography" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
@@ -1636,23 +1642,27 @@
         <div class="first-use-overlay"></div>
         <div class="first-use-content">
             <div class="first-use-icon">🔒</div>
-            <h3 class="first-use-title" data-i18n="modal.title">使用前說明</h3>
+            <h3 class="first-use-title" data-i18n="modal.title">關於此工具</h3>
             <ul class="first-use-list">
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span data-i18n="modal.item1">本工具<strong>不會保留任何密碼或敏感資訊</strong>，關閉頁面後即完全清除（規則設定等偏好僅儲存於您自己的瀏覽器中）</span>
+                    <span data-i18n="modal.item1">本工具<strong>不會收集任何使用者資訊</strong></span>
                 </li>
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span data-i18n="modal.item2">所有運算都在<strong>您自己的裝置上</strong>完成，不會連線到任何伺服器</span>
+                    <span data-i18n="modal.item2">本工具<strong>不會保留任何密碼或敏感資料</strong>，關閉頁面後即完全清除</span>
                 </li>
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span data-i18n="modal.item3">這是一個<strong>純本地工具</strong>，沒有後台系統，<strong>不會收集任何使用者相關資訊</strong></span>
+                    <span data-i18n="modal.item3"><strong>所有運算均在您自己的裝置上完成</strong>，不會連線到任何伺服器</span>
                 </li>
                 <li>
                     <span class="first-use-list-icon">✓</span>
-                    <span data-i18n="modal.item4">只要輸入相同的內容與設定，每次都會得到<strong>完全相同的密碼</strong>，方便隨時重新產生</span>
+                    <span data-i18n="modal.item4">原始碼<strong>完全公開於 GitHub</strong>，您可以自行驗證本工具是否有傳送資料或保留任何資訊</span>
+                </li>
+                <li>
+                    <span class="first-use-list-icon">✓</span>
+                    <span data-i18n="modal.item5"><strong>相同的輸入與設定每次都會產生完全相同的密碼</strong>，方便隨時重新產生</span>
                 </li>
             </ul>
             <div class="first-use-note">
@@ -1668,7 +1678,7 @@
         const i18n = (() => {
             const translations = {
                 'zh-TW': {
-                    pageTitle: '確定性密碼產生器 | 離線、無帳號、可重現',
+                    'pageTitle': '確定性密碼產生器',
                     'guide.title': '使用說明',
                     'guide.step1': '在右側點擊「新增規則」，選擇加密方式並填入參數，可新增多條規則依序套用。',
                     'guide.step2': '輸入你記在備忘錄的 <strong>Password</strong>，這是你自訂的明文密碼。',
@@ -1701,6 +1711,7 @@
                     'common.optional': '選填',
                     'common.selectAll': '全選',
                     'common.darkToggle': '切換暗色模式',
+                    'common.aboutBtn': '關於此工具',
                     'rules.title': '加密規則',
                     'rules.addRule': '＋ 新增規則',
                     'rules.pickerTitle': '選擇加密規則',
@@ -1731,11 +1742,12 @@
                     'rules.columnar.name': '列移位密碼',
                     'rules.columnar.desc': '將字元依序填入指定欄數的表格，再依金鑰字母的排序決定讀取欄位的順序，打亂字元位置而不改變字元本身。',
                     'rules.columnar.keyLabel': '金鑰',
-                    'modal.title': '使用前說明',
-                    'modal.item1': '本工具<strong>不會保留任何密碼或敏感資訊</strong>，關閉頁面後即完全清除（規則設定等偏好僅儲存於您自己的瀏覽器中）',
-                    'modal.item2': '所有運算都在<strong>您自己的裝置上</strong>完成，不會連線到任何伺服器',
-                    'modal.item3': '這是一個<strong>純本地工具</strong>，沒有後台系統，<strong>不會收集任何使用者相關資訊</strong>',
-                    'modal.item4': '只要輸入相同的內容與設定，每次都會得到<strong>完全相同的密碼</strong>，方便隨時重新產生',
+                    'modal.title': '關於此工具',
+                    'modal.item1': '本工具<strong>不會收集任何使用者資訊</strong>',
+                    'modal.item2': '本工具<strong>不會保留任何密碼或敏感資料</strong>，關閉頁面後即完全清除',
+                    'modal.item3': '<strong>所有運算均在您自己的裝置上完成</strong>，不會連線到任何伺服器',
+                    'modal.item4': '原始碼<strong>完全公開於 GitHub</strong>，您可以自行驗證本工具是否有傳送資料或保留任何資訊',
+                    'modal.item5': '<strong>相同的輸入與設定每次都會產生完全相同的密碼</strong>，方便隨時重新產生',
                     'modal.note': '規則參數等偏好設定會儲存於瀏覽器的 localStorage。如需清除，請透過瀏覽器的「清除網站資料」功能。',
                     'modal.closeBtn': '知道了',
                     'err.caesarShift': '請輸入凱薩密碼的位移量',
@@ -1758,7 +1770,7 @@
                     'strength.label':      '強度：',
                 },
                 'en': {
-                    pageTitle: 'Deterministic Password Generator — Same Input Always Produces the Same Password',
+                    'pageTitle': 'Deterministic Password Generator',
                     'guide.title': 'How to Use',
                     'guide.step1': 'Click <strong>Add Rule</strong> on the right, choose a cipher, and fill in its parameters. You can add multiple rules to apply them in sequence.',
                     'guide.step2': 'Enter the <strong>Password</strong> you keep in your notes — this is your plain-text password before encryption.',
@@ -1791,6 +1803,7 @@
                     'common.optional': 'Optional',
                     'common.selectAll': 'Select all',
                     'common.darkToggle': 'Toggle dark mode',
+                    'common.aboutBtn': 'About this tool',
                     'rules.title': 'Encryption Rules',
                     'rules.addRule': '+ Add Rule',
                     'rules.pickerTitle': 'Choose a Cipher',
@@ -1821,11 +1834,12 @@
                     'rules.columnar.name': 'Columnar Transposition',
                     'rules.columnar.desc': 'Fills characters row by row into a grid, then reads columns in the order determined by sorting the key letters alphabetically. Character values stay the same — only their positions change.',
                     'rules.columnar.keyLabel': 'Key',
-                    'modal.title': 'Before You Start',
-                    'modal.item1': 'This tool <strong>never retains any passwords or sensitive information</strong> — they are cleared when you close the page (rule settings and preferences are only stored locally in your own browser)',
-                    'modal.item2': 'Everything runs <strong>on your own device</strong> — no connection to any server',
-                    'modal.item3': 'This is a <strong>fully local tool</strong> with no backend system — <strong>no user data is collected</strong>',
-                    'modal.item4': 'The same inputs and settings always give you <strong>the exact same password</strong>, so you can regenerate it anytime',
+                    'modal.title': 'About This Tool',
+                    'modal.item1': 'This tool <strong>collects no user data</strong>',
+                    'modal.item2': 'This tool <strong>retains no passwords or sensitive information</strong> — everything is cleared when you close the page',
+                    'modal.item3': '<strong>All processing happens on your own device</strong> — no connection to any server',
+                    'modal.item4': 'The source code is <strong>fully open on GitHub</strong> — you can verify for yourself that no data is transmitted or retained',
+                    'modal.item5': '<strong>The same inputs and settings always produce the exact same password</strong>, so you can regenerate it anytime',
                     'modal.note': 'Rule parameters and preferences are saved in your browser\'s localStorage. To clear them, use your browser\'s "Clear site data" feature.',
                     'modal.closeBtn': 'Got it',
                     'err.caesarShift': 'Please enter a shift value for the Caesar cipher',
@@ -2011,6 +2025,7 @@
             function init() {
                 closeBtn.addEventListener('click', () => modal.classList.remove('is-visible'));
                 modal.querySelector('.first-use-overlay').addEventListener('click', () => modal.classList.remove('is-visible'));
+                document.getElementById('about-btn').addEventListener('click', () => show());
             }
 
             return { show, init };
@@ -2673,8 +2688,6 @@
                     _resetStrength();
                 }
             }
-
-            function getLastScore() { return _lastScore; }
 
             function refreshError() {
                 if (!_lastErrKey) return;
