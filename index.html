@@ -2790,9 +2790,26 @@
                 // Clear all previous input error states
                 _clearAllInputErrors();
 
+                const rules = RuleBuilder.getRules();
+
+                if (rules.length === 0) {
+                    const addRuleBtn = document.getElementById('add-rule-btn');
+
+                    RuleBuilder.showNoRulesHint();
+
+                    addRuleBtn.classList.remove('add-rule-btn-pulse');
+                    void addRuleBtn.offsetWidth;
+                    addRuleBtn.classList.add('add-rule-btn-pulse');
+                    addRuleBtn.addEventListener('animationend', () => {
+                        addRuleBtn.classList.remove('add-rule-btn-pulse');
+                    }, { once: true });
+
+                    _resetStrength();
+                    return;
+                }
+
                 let hasError = false;
 
-                // Validate Password
                 if (!password) {
                     const plainInp = document.getElementById('enc-plain');
                     const plainErr = document.getElementById('enc-plain-error');
@@ -2804,8 +2821,6 @@
                     hasError = true;
                 }
 
-                const rules = RuleBuilder.getRules();
-
                 // Validate all rule parameters
                 const ruleCards = [...document.querySelectorAll('#rule-list .rule-card')];
                 for (let i = 0; i < rules.length; i++) {
@@ -2814,24 +2829,6 @@
                 }
 
                 if (hasError) {
-                    _resetStrength();
-                    return;
-                }
-
-                if (rules.length === 0) {
-                    const addRuleBtn = document.getElementById('add-rule-btn');
-
-                    // Show hint
-                    RuleBuilder.showNoRulesHint();
-
-                    // Pulse the Add Rule button
-                    addRuleBtn.classList.remove('add-rule-btn-pulse');
-                    void addRuleBtn.offsetWidth;
-                    addRuleBtn.classList.add('add-rule-btn-pulse');
-                    addRuleBtn.addEventListener('animationend', () => {
-                        addRuleBtn.classList.remove('add-rule-btn-pulse');
-                    }, { once: true });
-
                     _resetStrength();
                     return;
                 }
@@ -3427,7 +3424,6 @@
                 const hintEl = document.getElementById('no-rules-hint');
                 listEl.innerHTML = '';
                 if (_rules.length === 0) {
-                    showNoRulesHint();
                     return;
                 }
                 // 有規則時收起提示
