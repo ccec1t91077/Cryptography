@@ -1,4 +1,4 @@
-# Password Encryption Tool
+# Deterministic Password Generator
 
 Encrypt a plain-text password using classical cipher algorithms to generate a reproducible strong password for website login.
 
@@ -8,7 +8,7 @@ Encrypt a plain-text password using classical cipher algorithms to generate a re
 
 ## Features
 
-- Supports seven classical cipher rules, freely combinable and reorderable
+- Supports seven classical cipher rules, freely addable, reorderable, and combinable, applied in sequence
 - All operations run locally in the browser — no data is transmitted
 - Preferences (rule parameters, symbol options, password length, etc.) are automatically saved to `localStorage`
 - Fully static page with no backend — open directly as a file or deploy to any static host
@@ -149,7 +149,7 @@ This tool is designed to **convert a memorable plain-text password into a hard-t
 **Advantages**
 - All operations run locally — no data is transmitted
 - Reproducible: regenerate anytime from the same inputs
-- No need to store the encrypted password
+- No need to store the encrypted password, reducing the risk of leakage
 
 **Limitations**
 - Classical ciphers are not suitable for modern cryptographic requirements
@@ -160,4 +160,4 @@ This tool is designed to **convert a memorable plain-text password into a hard-t
 
 ## License
 
-© 2026 ccec1t91077 — v1.3.6
+© 2026 ccec1t91077 — v1.3.7
