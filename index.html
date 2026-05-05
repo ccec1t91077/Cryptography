@@ -24,7 +24,7 @@
     <link href="fonts/fonts.css" rel="stylesheet" />
     <script src="libs/zxcvbn.js"></script>
     <script>
-        // 提前套用暗色模式，避免頁面載入時的白色閃爍
+        // Apply dark mode early to prevent white flash on page load
         (function() {
             try {
                 const raw = localStorage.getItem(
@@ -54,6 +54,7 @@
             --border-focus: #0c6ef2;
             --accent: #0c6ef2;
             --accent-hover: #0a5ed4;
+            --accent-checkbox: #0c6ef2;
             --text-primary: #1a1523;
             --text-secondary: #5c5973;
             --text-muted: #9b98ab;
@@ -80,32 +81,33 @@
         }
 
         html.dark {
-            --bg: #0f0f12;
-            --surface: #1c1c22;
-            --surface2: #26262e;
-            --border: #35353f;
+            --bg: #16161a;
+            --surface: #242429;
+            --surface2: #2e2e35;
+            --border: #46464f;
             --border-focus: #4d8ef5;
             --accent: #4d8ef5;
             --accent-hover: #6aa0f7;
-            --text-primary: #e8e6f0;
-            --text-secondary: #9b98ab;
-            --text-muted: #5c5973;
-            --result-color: #7ab3ff;
-            --result-bg: #1a2340;
-            --result-border: #2d3f6b;
-            --step-bg: #1a2340;
-            --step-border: #2d3f6b;
-            --step-color: #7ab3ff;
-            --card-icon-bg: #1a2340;
-            --card-icon-border: #2d3f6b;
-            --hint-tag-bg: #2a2010;
-            --hint-tag-border: #5a4a10;
-            --hint-tag-color: #d4a830;
-            --range-output-bg: #1a2340;
-            --range-output-border: #2d3f6b;
-            --symbol-selected-bg: #1a2340;
-            --symbol-selected-border: #2d3f6b;
-            --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+            --accent-checkbox: #4d8ef5;
+            --text-primary: #f4f4f6;
+            --text-secondary: #b8bcd0;
+            --text-muted: #72748a;
+            --result-color: #89b8ff;
+            --result-bg: #1c2540;
+            --result-border: #334880;
+            --step-bg: #1c2540;
+            --step-border: #334880;
+            --step-color: #89b8ff;
+            --card-icon-bg: #1c2540;
+            --card-icon-border: #334880;
+            --hint-tag-bg: #272008;
+            --hint-tag-border: #564510;
+            --hint-tag-color: #f0c84a;
+            --range-output-bg: #1c2540;
+            --range-output-border: #334880;
+            --symbol-selected-bg: #1c2540;
+            --symbol-selected-border: #334880;
+            --shadow-card: 0 2px 16px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.35);
         }
 
         body {
@@ -160,9 +162,9 @@
         .panel-head-icon.indigo { background: #f0eeff; }
         .panel-head-icon.teal { background: #e6f7f4; }
 
-        html.dark .panel-head-icon.blue { background: #1a2340; }
-        html.dark .panel-head-icon.indigo { background: #1e1a38; }
-        html.dark .panel-head-icon.teal { background: #0f2420; }
+        html.dark .panel-head-icon.blue { background: #1c2540; }
+        html.dark .panel-head-icon.indigo { background: #201e3c; }
+        html.dark .panel-head-icon.teal { background: #0e2822; }
 
         .panel-head h2 {
             font-size: 14px;
@@ -288,6 +290,40 @@
         }
 
         input::placeholder { color: var(--text-muted); }
+
+        input.input-error,
+        input.input-error:hover:not(:focus) {
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 3px rgba(229,62,62,0.12);
+        }
+
+        input.input-error:focus {
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 3px rgba(229,62,62,0.18);
+        }
+
+        html.dark input.input-error,
+        html.dark input.input-error:hover:not(:focus) {
+            border-color: #fc8181;
+            box-shadow: 0 0 0 3px rgba(252,129,129,0.15);
+        }
+
+        html.dark input.input-error:focus {
+            border-color: #fc8181;
+            box-shadow: 0 0 0 3px rgba(252,129,129,0.2);
+        }
+
+        .input-error-msg {
+            display: block;
+            font-size: 11px;
+            color: #e53e3e;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        html.dark .input-error-msg {
+            color: #fc8181;
+        }
 
         .custom-select {
             position: relative;
@@ -558,7 +594,7 @@
         .auto-fill-item input[type="checkbox"] {
             width: 14px;
             height: 14px;
-            accent-color: var(--accent);
+            accent-color: var(--accent-checkbox);
             cursor: pointer;
             flex-shrink: 0;
         }
@@ -636,7 +672,7 @@
         }
 
         .symbol-toggle-all input[type="checkbox"] {
-            accent-color: var(--accent);
+            accent-color: var(--accent-checkbox);
             cursor: pointer;
         }
 
@@ -995,7 +1031,7 @@
         }
 
         html.dark .first-use-list-icon {
-            background: #0f2a1e;
+            background: #0e2a1e;
             border-color: #1a4a30;
             color: #4db87a;
         }
@@ -1069,6 +1105,68 @@
         html.dark .add-rule-btn:hover {
             background: var(--symbol-selected-bg);
             border-color: rgba(77, 142, 245, 0.75);
+        }
+
+        .no-rules-hint {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            padding: 24px 16px;
+            background: var(--hint-tag-bg);
+            border: 1px solid var(--hint-tag-border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .no-rules-hint-icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .no-rules-hint-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--hint-tag-color);
+            letter-spacing: -0.01em;
+        }
+
+        .no-rules-hint-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        @keyframes hint-slide-in {
+            from { opacity: 0; transform: translateY(-8px); max-height: 0; padding-top: 0; padding-bottom: 0; }
+            to   { opacity: 1; transform: translateY(0);    max-height: 200px; padding-top: 24px; padding-bottom: 24px; }
+        }
+
+        .no-rules-hint.is-entering {
+            display: flex;
+            animation: hint-slide-in 0.25s ease forwards;
+        }
+
+        /* ── Pulse animation (Add Rule button) ────────────────────── */
+        @keyframes rule-btn-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(12,110,242,0.45); border-color: var(--accent); }
+            85%  { box-shadow: 0 0 0 8px rgba(12,110,242,0);  border-color: rgba(12,110,242,0.45); }
+            100% { box-shadow: 0 0 0 0 rgba(12,110,242,0); }
+        }
+
+        @keyframes rule-btn-pulse-dark {
+            0%   { box-shadow: 0 0 0 0 rgba(91,156,246,0.7);  border-color: var(--accent); }
+            85%  { box-shadow: 0 0 0 10px rgba(91,156,246,0); border-color: rgba(77,142,245,0.55); }
+            100% { box-shadow: 0 0 0 0 rgba(91,156,246,0); }
+        }
+
+        .add-rule-btn-pulse {
+            animation: rule-btn-pulse 0.5s ease 2;
+        }
+
+        html.dark .add-rule-btn-pulse {
+            animation: rule-btn-pulse-dark 0.5s ease 2;
         }
 
         /* ── Cipher Picker Modal ──────────────────────────────────── */
@@ -1309,7 +1407,6 @@
         html.dark .rule-card-delete:hover {
             background: #3d1a1a;
         }
-
         .rule-card-body {
             display: flex;
             flex-direction: column;
@@ -1436,6 +1533,7 @@
                             </svg>
                         </button>
                     </div>
+                    <span class="input-error-msg" id="enc-plain-error" style="display:none"></span>
                 </div>
 
                 <div class="form-group">
@@ -1552,12 +1650,17 @@
             <div class="panel-body">
                 <button class="add-rule-btn" id="add-rule-btn" type="button" data-i18n="rules.addRule">＋ 新增規則</button>
                 <div id="rule-list"></div>
+                <div class="no-rules-hint" id="no-rules-hint">
+                    <span class="no-rules-hint-icon">🔧</span>
+                    <span class="no-rules-hint-title" data-i18n="rules.noRulesTitle">尚未設定加密規則</span>
+                    <span class="no-rules-hint-sub" data-i18n="rules.noRulesHint">點擊上方按鈕新增規則，才能產生加密密碼</span>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <div class="app-version">v1.3.7<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.3.8<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
         <div class="bottom-bar-row">
@@ -1714,6 +1817,8 @@
                     'common.aboutBtn': '關於此工具',
                     'rules.title': '加密規則',
                     'rules.addRule': '＋ 新增規則',
+                    'rules.noRulesTitle': '尚未設定加密規則',
+                    'rules.noRulesHint': '點擊上方按鈕新增規則，才能產生加密密碼',
                     'rules.pickerTitle': '選擇加密規則',
                     'rules.deleteRule': '刪除此規則',
                     'rules.caesar.name': '凱薩密碼',
@@ -1750,14 +1855,15 @@
                     'modal.item5': '<strong>相同的輸入與設定每次都會產生完全相同的密碼</strong>，方便隨時重新產生',
                     'modal.note': '規則參數等偏好設定會儲存於瀏覽器的 localStorage。如需清除，請透過瀏覽器的「清除網站資料」功能。',
                     'modal.closeBtn': '知道了',
-                    'err.caesarShift': '請輸入凱薩密碼的位移量',
-                    'err.affineB': '請輸入仿射密碼的位移量 b',
-                    'err.vigenereKey': '請輸入金鑰',
-                    'err.playfairKey': '請輸入關鍵字',
-                    'err.hillMatrix': '請填入完整的 2×2 金鑰矩陣',
+                    'err.emptyPassword': '尚未輸入密碼',
+                    'err.caesarShift': '尚未設定位移量',
+                    'err.affineA': '尚未選擇乘數',
+                    'err.affineB': '尚未設定位移量',
+                    'err.vigenereKey': '尚未設定金鑰',
+                    'err.playfairKey': '尚未設定關鍵字',
+                    'err.hillMatrix': '矩陣尚未填寫完整',
                     'err.hillInvalid': '金鑰矩陣不可逆，請調整數值',
-                    'err.columnarKey': '請輸入金鑰',
-                    'err.noRules': '請至少新增一條加密規則',
+                    'err.columnarKey': '尚未設定金鑰',
                     'hint.missingUpper': '缺少大寫字母',
                     'hint.missingLower': '缺少小寫字母',
                     'hint.missingDigit': '缺少數字',
@@ -1806,6 +1912,8 @@
                     'common.aboutBtn': 'About this tool',
                     'rules.title': 'Encryption Rules',
                     'rules.addRule': '+ Add Rule',
+                    'rules.noRulesTitle': 'No encryption rules set',
+                    'rules.noRulesHint': 'Add a rule above to generate an encrypted password',
                     'rules.pickerTitle': 'Choose a Cipher',
                     'rules.deleteRule': 'Delete this rule',
                     'rules.caesar.name': 'Caesar Cipher',
@@ -1842,14 +1950,15 @@
                     'modal.item5': '<strong>The same inputs and settings always produce the exact same password</strong>, so you can regenerate it anytime',
                     'modal.note': 'Rule parameters and preferences are saved in your browser\'s localStorage. To clear them, use your browser\'s "Clear site data" feature.',
                     'modal.closeBtn': 'Got it',
-                    'err.caesarShift': 'Please enter a shift value for the Caesar cipher',
-                    'err.affineB': 'Please enter shift b for the Affine cipher',
-                    'err.vigenereKey': 'Please enter a key',
-                    'err.playfairKey': 'Please enter a keyword',
-                    'err.hillMatrix': 'Please fill in the complete 2×2 key matrix',
-                    'err.hillInvalid': 'The key matrix is not invertible — please adjust the values',
-                    'err.columnarKey': 'Please enter a key',
-                    'err.noRules': 'Please add at least one encryption rule',
+                    'err.emptyPassword': 'No password entered',
+                    'err.caesarShift': 'Shift not set',
+                    'err.affineA': 'Multiplier not selected',
+                    'err.affineB': 'Shift not set',
+                    'err.vigenereKey': 'Key not set',
+                    'err.playfairKey': 'Keyword not set',
+                    'err.hillMatrix': 'Matrix not complete',
+                    'err.hillInvalid': 'Key matrix is not invertible — please adjust the values',
+                    'err.columnarKey': 'Key not set',
                     'hint.missingUpper': 'Missing uppercase letter',
                     'hint.missingLower': 'Missing lowercase letter',
                     'hint.missingDigit': 'Missing digit',
@@ -1911,7 +2020,7 @@
 
         // ── StorageManager ──────────────────────────────────────────
         const StorageManager = (() => {
-            // 以當前 URL（origin + pathname）產生穩定的 hash key
+            // Generate a stable hash key from the current URL (origin + pathname)
             function _genKey(url) {
                 let hash = 0;
                 for (let i = 0; i < url.length; i++) {
@@ -1979,13 +2088,13 @@
 
         StorageManager.init();
 
-        // ── 初始化語言 ───────────────────────────────────────────────
+        // ── Initialize language ──────────────────────────────────────
         i18n.init(StorageManager.get('prefs.lang', 'zh-TW'));
         // ────────────────────────────────────────────────────────────
 
-        // ── 從 localStorage 還原使用者設定 ──────────────────────────
+        // ── Restore user preferences from localStorage ───────────────
         (() => {
-            // 特殊符號
+            // Special symbols
             const savedSymbols = StorageManager.get('prefs.symbols');
             if (savedSymbols !== undefined) {
                 document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => {
@@ -1997,13 +2106,13 @@
                 selectAll.indeterminate = !selectAll.checked && [...all].some(c => c.checked);
             }
 
-            // 密碼長度
+            // Password length
             const savedLength = StorageManager.get('prefs.length');
             if (savedLength !== undefined) {
                 document.getElementById('enc-length').value = savedLength;
             }
 
-            // 自動補充字元
+            // Auto-fill character types
             const savedAutoFill = StorageManager.get('prefs.autoFill');
             if (savedAutoFill !== undefined) {
                 ['upper','lower','digit','symbol'].forEach(k => {
@@ -2095,6 +2204,14 @@
         })();
 
         PasswordVisibility.init();
+
+        // Password input: clear error state on input
+        document.getElementById('enc-plain').addEventListener('input', () => {
+            const inp = document.getElementById('enc-plain');
+            const err = document.getElementById('enc-plain-error');
+            inp.classList.remove('input-error');
+            if (err) { err.style.display = 'none'; err.textContent = ''; }
+        });
         // ────────────────────────────────────────────────────────────
 
         // ── CharsetManager ──────────────────────────────────────────
@@ -2116,7 +2233,7 @@
             return { get };
         })();
         // ────────────────────────────────────────────────────────────
-        // 全選聯動
+        // Select-all checkbox sync
         const selectAll = document.getElementById('symbol-select-all');
         const chips = document.querySelectorAll('.symbol-chip input[type="checkbox"]');
 
@@ -2124,7 +2241,7 @@
             const checked = [...chips].filter(c => c.checked).map(c => c.value);
             StorageManager.set('prefs.symbols', checked);
             RuleBuilder.refreshAllAffineSelects();
-            // 更新希爾密碼的字元表長度提示
+            // Update Hill cipher charset length hint
             document.querySelectorAll('._charset-hint').forEach(el => {
                 if (typeof el._updateCharsetHint === 'function') el._updateCharsetHint();
             });
@@ -2139,7 +2256,7 @@
             _saveSymbols();
         }));
 
-        // 密碼長度 range
+        // Password length range slider
         const lengthInput = document.getElementById('enc-length');
         const lengthOutput = document.querySelector('output[for="enc-length"]');
         function _updateRange() {
@@ -2156,7 +2273,7 @@
 
         // ── CaesarCipher ─────────────────────────────────────────────
         const CaesarCipher = (() => {
-            // 在 charset 內對字元做位移，不在 charset 內的字元原樣保留
+            // Shift characters within charset; characters outside charset are passed through unchanged
             function _shiftChar(char, shift, charset) {
                 const idx = charset.indexOf(char);
                 if (idx === -1) return char;
@@ -2245,7 +2362,7 @@
         const VigenereCipher = (() => {
             function encrypt(plaintext, key, charset) {
                 if (!key) return plaintext;
-                // 將 key 中不在 charset 的字元過濾掉，確保每個 key 字元都有對應 index
+                // Filter out key characters not in charset to ensure every key char has a valid index
                 const validKey = key.split('').filter(c => charset.indexOf(c) !== -1);
                 if (validKey.length === 0) return plaintext;
                 const m = charset.length;
@@ -2266,7 +2383,7 @@
         // ── PlayfairCipher ───────────────────────────────────────────
         const PlayfairCipher = (() => {
             function _getDimensions(n) {
-                // 找最接近正方形的 rows × cols，rows <= cols
+                // Find dimensions closest to a square, rows <= cols
                 let rows = Math.floor(Math.sqrt(n));
                 while (n % rows !== 0) rows--;
                 return { rows, cols: n / rows };
@@ -2327,13 +2444,13 @@
                     const [ra, ca] = pos[a];
                     const [rb, cb] = pos[b];
                     if (ra === rb) {
-                        // 同列：各往右移一格
+                        // Same row: shift each one column to the right
                         return grid[ra][(ca + 1) % cols] + grid[rb][(cb + 1) % cols];
                     } else if (ca === cb) {
-                        // 同欄：各往下移一格
+                        // Same column: shift each one row down
                         return grid[(ra + 1) % rows][ca] + grid[(rb + 1) % rows][cb];
                     } else {
-                        // 矩形：交換欄
+                        // Rectangle: swap columns
                         return grid[ra][cb] + grid[rb][ca];
                     }
                 }).join('');
@@ -2354,7 +2471,7 @@
                 for (let x = 1; x < m; x++) {
                     if ((a * x) % m === 1) return x;
                 }
-                return -1; // 不可逆
+                return -1; // not invertible
             }
 
             function isValidKey(a, b, c, d, m) {
@@ -2364,7 +2481,7 @@
 
             function encrypt(plaintext, a, b, c, d, charset) {
                 const m = charset.length;
-                // 過濾不在 charset 的字元，記錄位置以便還原
+                // Filter characters not in charset, recording positions for later restoration
                 const chars = plaintext.split('');
                 const indices = [];
                 const filtered = [];
@@ -2376,10 +2493,10 @@
                     }
                 });
 
-                // 若長度為奇數，補一個 charset[0]
+                // Pad to even length with charset[0] if needed
                 if (filtered.length % 2 !== 0) filtered.push(0);
 
-                // 2×2 矩陣乘法
+                // 2×2 matrix multiplication
                 const encrypted = [];
                 for (let i = 0; i < filtered.length; i += 2) {
                     const p1 = filtered[i], p2 = filtered[i + 1];
@@ -2387,7 +2504,7 @@
                     encrypted.push(((c * p1 + d * p2) % m + m) % m);
                 }
 
-                // 將結果放回原位，不在 charset 的字元原樣保留
+                // Write encrypted values back to original positions; non-charset chars are preserved
                 const result = [...chars];
                 indices.forEach((pos, i) => {
                     if (i < encrypted.length) result[pos] = charset[encrypted[i]];
@@ -2429,7 +2546,7 @@
                 if (!key) return plaintext;
                 const cols = key.length;
                 const rows = Math.ceil(plaintext.length / cols);
-                // 填入 grid，不足補 null
+                // Fill grid row by row, padding with null
                 const grid = [];
                 for (let r = 0; r < rows; r++) {
                     grid.push([]);
@@ -2438,7 +2555,7 @@
                         grid[r].push(idx < plaintext.length ? plaintext[idx] : null);
                     }
                 }
-                // 依金鑰字母排序決定欄的讀取順序
+                // Determine column read order by sorting key letters alphabetically
                 const order = [...key.toUpperCase()]
                     .map((ch, i) => ({ ch, i }))
                     .sort((a, b) => a.ch < b.ch ? -1 : a.ch > b.ch ? 1 : a.i - b.i)
@@ -2460,7 +2577,6 @@
         // ── EncryptionManager ────────────────────────────────────────
         const EncryptionManager = (() => {
             let _lastScore = null;
-            let _lastErrKey = null;
 
             function _resetStrength() {
                 _lastScore = null;
@@ -2470,66 +2586,196 @@
                 if (label) label.textContent = i18n.t('strength.label') + '-';
             }
 
-            function _setError(resultEl, errKey) {
-                _lastErrKey = errKey;
-                resultEl.textContent = i18n.t(errKey);
-                resultEl.style.color = 'var(--text-muted)';
+            function _markInputError(cardEl, selector, msgKey) {
+                if (!cardEl) return;
+                const inp = cardEl.querySelector(selector);
+                if (!inp) return;
+                inp.classList.add('input-error');
+                // Insert or update error message after the input
+                let msg = inp.nextElementSibling;
+                if (!msg || !msg.classList.contains('input-error-msg')) {
+                    msg = document.createElement('span');
+                    msg.className = 'input-error-msg';
+                    inp.parentNode.insertBefore(msg, inp.nextSibling);
+                }
+                msg.textContent = i18n.t(msgKey);
+                msg.style.display = 'block';
+                // Clear error on input: remove error state as soon as user starts typing
+                if (!inp._errorListenerAdded) {
+                    inp._errorListenerAdded = true;
+                    inp.addEventListener('input', () => {
+                        inp.classList.remove('input-error');
+                        const m = inp.nextElementSibling;
+                        if (m && m.classList.contains('input-error-msg')) {
+                            m.style.display = 'none';
+                            m.textContent = '';
+                        }
+                    });
+                }
             }
-            function _applyRule(rule, input, charset, resultEl) {
+
+            function _markHillInputErrors(cardEl, vals, msgKey) {
+                if (!cardEl) return;
+                const inputs = cardEl.querySelectorAll('.hill-matrix input[type="number"]');
+                inputs.forEach((inp, i) => {
+                    if (isNaN(parseInt(vals[i]))) {
+                        inp.classList.add('input-error');
+                    }
+                });
+                // Insert or update error message after the hill-matrix
+                const matrix = cardEl.querySelector('.hill-matrix');
+                if (matrix) {
+                    let msg = matrix.nextElementSibling;
+                    if (!msg || !msg.classList.contains('input-error-msg')) {
+                        msg = document.createElement('span');
+                        msg.className = 'input-error-msg';
+                        matrix.parentNode.insertBefore(msg, matrix.nextSibling);
+                    }
+                    msg.textContent = i18n.t(msgKey);
+                    msg.style.display = 'block';
+                    // Clear error on input: remove per-cell error when user edits any cell
+                    inputs.forEach(inp => {
+                        if (!inp._errorListenerAdded) {
+                            inp._errorListenerAdded = true;
+                            inp.addEventListener('input', () => {
+                                inp.classList.remove('input-error');
+                                if (![...inputs].some(i => i.classList.contains('input-error'))) {
+                                    msg.style.display = 'none';
+                                    msg.textContent = '';
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            function _markAllHillInputErrors(cardEl, msgKey) {
+                if (!cardEl) return;
+                const inputs = cardEl.querySelectorAll('.hill-matrix input[type="number"]');
+                inputs.forEach(inp => { inp.classList.add('input-error'); });
+                const matrix = cardEl.querySelector('.hill-matrix');
+                if (matrix) {
+                    let msg = matrix.nextElementSibling;
+                    if (!msg || !msg.classList.contains('input-error-msg')) {
+                        msg = document.createElement('span');
+                        msg.className = 'input-error-msg';
+                        matrix.parentNode.insertBefore(msg, matrix.nextSibling);
+                    }
+                    msg.textContent = i18n.t(msgKey);
+                    msg.style.display = 'block';
+                    inputs.forEach(inp => {
+                        if (!inp._errorListenerAdded) {
+                            inp._errorListenerAdded = true;
+                            inp.addEventListener('input', () => {
+                                inp.classList.remove('input-error');
+                                if (![...inputs].some(i => i.classList.contains('input-error'))) {
+                                    msg.style.display = 'none';
+                                    msg.textContent = '';
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            function _clearAllInputErrors() {
+                // Clear errors inside rule cards
+                document.querySelectorAll('.rule-card input.input-error').forEach(el => {
+                    el.classList.remove('input-error');
+                });
+                document.querySelectorAll('.rule-card .input-error-msg').forEach(el => {
+                    el.style.display = 'none';
+                    el.textContent = '';
+                });
+                // Clear Affine cipher custom-select border
+                document.querySelectorAll('.rule-card .custom-select-trigger').forEach(el => {
+                    el.style.borderColor = '';
+                });
+                // Clear Password input
+                const plainInp = document.getElementById('enc-plain');
+                plainInp.classList.remove('input-error');
+                const plainErr = document.getElementById('enc-plain-error');
+                if (plainErr) { plainErr.style.display = 'none'; plainErr.textContent = ''; }
+            }
+
+            // Validate a single rule, mark all problematic inputs, return the first errKey or null
+            function _validateRule(rule, charset, cardEl) {
                 const { type, params } = rule;
                 if (type === 'caesar') {
-                    const shift = parseInt(params.shift);
-                    if (isNaN(shift)) {
-                        _setError(resultEl, 'err.caesarShift');
-                        return null;
+                    if (isNaN(parseInt(params.shift))) {
+                        _markInputError(cardEl, 'input[type="number"]', 'err.caesarShift');
+                        return 'err.caesarShift';
                     }
-                    return CaesarCipher.encrypt(input, shift, charset);
                 } else if (type === 'affine') {
-                    const a = parseInt(params.a);
-                    const b = parseInt(params.b);
-                    if (isNaN(b)) {
-                        _setError(resultEl, 'err.affineB');
-                        return null;
+                    if (isNaN(parseInt(params.a))) {
+                        if (cardEl) {
+                            const trigger = cardEl.querySelector('.custom-select-trigger');
+                            if (trigger) trigger.style.borderColor = '#e53e3e';
+                            let msg = cardEl.querySelector('.custom-select + .input-error-msg');
+                            if (!msg) {
+                                const sel = cardEl.querySelector('.custom-select');
+                                if (sel) {
+                                    msg = document.createElement('span');
+                                    msg.className = 'input-error-msg';
+                                    sel.parentNode.insertBefore(msg, sel.nextSibling);
+                                }
+                            }
+                            if (msg) { msg.textContent = i18n.t('err.affineA'); msg.style.display = 'block'; }
+                        }
+                        return 'err.affineA';
                     }
-                    return AffineCipher.encrypt(input, a, b, charset);
+                    if (isNaN(parseInt(params.b))) {
+                        _markInputError(cardEl, 'input[type="number"]', 'err.affineB');
+                        return 'err.affineB';
+                    }
                 } else if (type === 'vigenere') {
-                    const key = params.key || '';
-                    if (!key) {
-                        _setError(resultEl, 'err.vigenereKey');
-                        return null;
+                    if (!params.key) {
+                        _markInputError(cardEl, 'input[type="text"]', 'err.vigenereKey');
+                        return 'err.vigenereKey';
                     }
-                    return VigenereCipher.encrypt(input, key, charset);
                 } else if (type === 'playfair') {
-                    const key = params.keyword || '';
-                    if (!key) {
-                        _setError(resultEl, 'err.playfairKey');
-                        return null;
+                    if (!params.keyword) {
+                        _markInputError(cardEl, 'input[type="text"]', 'err.playfairKey');
+                        return 'err.playfairKey';
                     }
-                    return PlayfairCipher.encrypt(input, key, charset);
                 } else if (type === 'hill') {
-                    const a = parseInt(params.a);
-                    const b = parseInt(params.b);
-                    const c = parseInt(params.c);
-                    const d = parseInt(params.d);
-                    if ([a, b, c, d].some(isNaN)) {
-                        _setError(resultEl, 'err.hillMatrix');
-                        return null;
+                    const vals = [params.a, params.b, params.c, params.d];
+                    const hasNaN = vals.some(v => isNaN(parseInt(v)));
+                    if (hasNaN) {
+                        _markHillInputErrors(cardEl, vals, 'err.hillMatrix');
+                        return 'err.hillMatrix';
                     }
+                    const a = parseInt(params.a), b = parseInt(params.b);
+                    const c = parseInt(params.c), d = parseInt(params.d);
                     if (!HillCipher.isValidKey(a, b, c, d, charset.length)) {
-                        _setError(resultEl, 'err.hillInvalid');
-                        return null;
+                        _markAllHillInputErrors(cardEl, 'err.hillInvalid');
+                        return 'err.hillInvalid';
                     }
-                    return HillCipher.encrypt(input, a, b, c, d, charset);
-                } else if (type === 'railfence') {
-                    const rails = parseInt(params.rails);
-                    return RailFenceCipher.encrypt(input, rails);
                 } else if (type === 'columnar') {
-                    const key = params.key || '';
-                    if (!key) {
-                        _setError(resultEl, 'err.columnarKey');
-                        return null;
+                    if (!params.key) {
+                        _markInputError(cardEl, 'input[type="text"]', 'err.columnarKey');
+                        return 'err.columnarKey';
                     }
-                    return ColumnarCipher.encrypt(input, key);
+                }
+                return null;
+            }
+
+            function _applyRule(rule, input, charset) {
+                const { type, params } = rule;
+                if (type === 'caesar') {
+                    return CaesarCipher.encrypt(input, parseInt(params.shift), charset);
+                } else if (type === 'affine') {
+                    return AffineCipher.encrypt(input, parseInt(params.a), parseInt(params.b), charset);
+                } else if (type === 'vigenere') {
+                    return VigenereCipher.encrypt(input, params.key, charset);
+                } else if (type === 'playfair') {
+                    return PlayfairCipher.encrypt(input, params.keyword, charset);
+                } else if (type === 'hill') {
+                    return HillCipher.encrypt(input, parseInt(params.a), parseInt(params.b), parseInt(params.c), parseInt(params.d), charset);
+                } else if (type === 'railfence') {
+                    return RailFenceCipher.encrypt(input, parseInt(params.rails));
+                } else if (type === 'columnar') {
+                    return ColumnarCipher.encrypt(input, params.key);
                 }
                 return input;
             }
@@ -2541,28 +2787,61 @@
                 const charset  = CharsetManager.get();
                 const resultEl = document.querySelector('.result-box span');
 
+                // Clear all previous input error states
+                _clearAllInputErrors();
+
+                let hasError = false;
+
+                // Validate Password
                 if (!password) {
-                    resultEl.textContent = '';
-                    resultEl.style.color = '';
-                    document.getElementById('result-hints').innerHTML = '';
+                    const plainInp = document.getElementById('enc-plain');
+                    const plainErr = document.getElementById('enc-plain-error');
+                    plainInp.classList.add('input-error');
+                    if (plainErr) {
+                        plainErr.textContent = i18n.t('err.emptyPassword');
+                        plainErr.style.display = 'block';
+                    }
+                    hasError = true;
+                }
+
+                const rules = RuleBuilder.getRules();
+
+                // Validate all rule parameters
+                const ruleCards = [...document.querySelectorAll('#rule-list .rule-card')];
+                for (let i = 0; i < rules.length; i++) {
+                    const errKey = _validateRule(rules[i], charset, ruleCards[i] || null);
+                    if (errKey) hasError = true;
+                }
+
+                if (hasError) {
                     _resetStrength();
                     return;
                 }
 
-                const rules = RuleBuilder.getRules();
                 if (rules.length === 0) {
-                    _setError(resultEl, 'err.noRules');
+                    const addRuleBtn = document.getElementById('add-rule-btn');
+
+                    // Show hint
+                    RuleBuilder.showNoRulesHint();
+
+                    // Pulse the Add Rule button
+                    addRuleBtn.classList.remove('add-rule-btn-pulse');
+                    void addRuleBtn.offsetWidth;
+                    addRuleBtn.classList.add('add-rule-btn-pulse');
+                    addRuleBtn.addEventListener('animationend', () => {
+                        addRuleBtn.classList.remove('add-rule-btn-pulse');
+                    }, { once: true });
+
                     _resetStrength();
                     return;
                 }
 
                 let result = password + salt;
-                for (const rule of rules) {
-                    result = _applyRule(rule, result, charset, resultEl);
-                    if (result === null) { _resetStrength(); return; }
+                for (let i = 0; i < rules.length; i++) {
+                    result = _applyRule(rules[i], result, charset);
                 }
 
-                // 長度處理：超出部分與前段 XOR（在 charset 內做 index XOR），不足則循環補齊
+                // Length handling: XOR overflow back into base, cycle-pad if too short
                 if (result.length > length) {
                     const csLen = charset.length;
                     const toIdx = c => {
@@ -2582,9 +2861,8 @@
 
                 resultEl.textContent = result;
                 resultEl.style.color = '';
-                _lastErrKey = null;
 
-                // ── 自動補充字元 ─────────────────────────────────────
+                // ── Auto-fill character types ────────────────────────
                 const autoUpper  = document.getElementById('auto-upper').checked;
                 const autoLower  = document.getElementById('auto-lower').checked;
                 const autoDigit  = document.getElementById('auto-digit').checked;
@@ -2596,7 +2874,7 @@
                     const DIGIT_SET  = '0123456789';
                     const SYMBOL_SET = CharsetManager.get().replace(/[A-Za-z0-9]/g, '');
 
-                    // 確定性 hash：將字串轉為穩定整數
+                    // Deterministic hash: convert string to a stable integer
                     const _hash = str => {
                         let h = 0;
                         for (let i = 0; i < str.length; i++)
@@ -2615,7 +2893,7 @@
                     const seed = password + salt;
 
                     types.forEach((type) => {
-                        // 找出每個類型在目前結果中唯一字元的位置（需保護）
+                        // Find positions of character types that only appear once (must be protected)
                         const protectedPos = new Set();
                         [
                             { test: /[A-Z]/, set: UPPER_SET },
@@ -2689,16 +2967,7 @@
                 }
             }
 
-            function refreshError() {
-                if (!_lastErrKey) return;
-                const resultEl = document.querySelector('.result-box span');
-                if (resultEl) {
-                    resultEl.textContent = i18n.t(_lastErrKey);
-                }
-            }
-
             function refreshLang() {
-                refreshError();
                 const lbl = document.getElementById('strength-bar-label');
                 if (!lbl) return;
                 if (_lastScore !== null) {
@@ -3137,11 +3406,33 @@
                 });
             }
 
+            function _hideNoRulesHint(hintEl) {
+                if (!hintEl) return;
+                hintEl.classList.remove('is-entering');
+                hintEl.style.display = 'none';
+            }
+
+            function showNoRulesHint() {
+                const hintEl = document.getElementById('no-rules-hint');
+                if (!hintEl) return;
+                // 已在顯示中則不重複觸發
+                if (hintEl.classList.contains('is-entering')) return;
+                hintEl.style.display = '';  // 清除 inline display:none
+                void hintEl.offsetWidth;    // reflow 確保動畫重新觸發
+                hintEl.classList.add('is-entering');
+            }
+
             function _render() {
                 const listEl = document.getElementById('rule-list');
+                const hintEl = document.getElementById('no-rules-hint');
                 listEl.innerHTML = '';
                 if (_rules.length === 0) {
+                    showNoRulesHint();
                     return;
+                }
+                // 有規則時收起提示
+                if (hintEl && hintEl.classList.contains('is-entering')) {
+                    _hideNoRulesHint(hintEl);
                 }
                 _rules.forEach(rule => {
                     listEl.appendChild(_buildCard(rule));
@@ -3225,7 +3516,7 @@
                 });
             }
 
-            return { addRule, removeRule, getRules, refreshAllAffineSelects, restore, init, refreshNames };
+            return { addRule, removeRule, getRules, refreshAllAffineSelects, restore, init, refreshNames, showNoRulesHint };
         })();
 
         // ── Add Rule UI ──────────────────────────────────────────────
