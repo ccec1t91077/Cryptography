@@ -2906,11 +2906,11 @@
                             if (positions.length === 1) protectedPos.add(positions[0]);
                         });
 
-                        // 候選位置：排除受保護的位置
+                        // Candidate positions: exclude protected positions
                         const candidates = arr.map((_, i) => i).filter(i => !protectedPos.has(i));
                         if (candidates.length === 0) return;
 
-                        // 用 hash 確定性選位置與字元
+                        // Use hash to deterministically select position and character
                         const posIdx = _hash(seed + type.key + 'pos') % candidates.length;
                         const charIdx = _hash(seed + type.key + 'char') % type.set.length;
 
@@ -2922,7 +2922,7 @@
                 }
                 // ────────────────────────────────────────────────────
 
-                // 密碼強度提示
+                // Password strength hints
                 const hintsEl = document.getElementById('result-hints');
                 hintsEl.innerHTML = '';
                 const checks = [
@@ -2940,7 +2940,7 @@
                     }
                 });
 
-                // ── zxcvbn 密碼強度評估 ──────────────────────────────
+                // ── zxcvbn password strength estimation ─────────────────────
                 const strengthFill  = document.getElementById('strength-bar-fill');
                 const strengthLabel = document.getElementById('strength-bar-label');
 
@@ -2988,7 +2988,7 @@
             EncryptionManager.run();
         });
 
-        // ── 複製按鈕 ─────────────────────────────────────────────────
+        // ── Copy button ──────────────────────────────────────────────────
         (() => {
             const btn = document.querySelector('.copy-btn');
             const resultSpan = document.querySelector('.result-box span');
@@ -3008,8 +3008,8 @@
         })();
         // ────────────────────────────────────────────────────────────
 
-        // ── 儲存規則參數設定 ─────────────────────────────────────────
-        // 自動補充字元
+        // ── Save rule preferences ────────────────────────────────────────
+        // Auto-fill characters
         function _saveAutoFill() {
             StorageManager.set('prefs.autoFill', {
                 upper:  document.getElementById('auto-upper').checked,
@@ -3412,10 +3412,10 @@
             function showNoRulesHint() {
                 const hintEl = document.getElementById('no-rules-hint');
                 if (!hintEl) return;
-                // 已在顯示中則不重複觸發
+                // Skip if already visible
                 if (hintEl.classList.contains('is-entering')) return;
-                hintEl.style.display = '';  // 清除 inline display:none
-                void hintEl.offsetWidth;    // reflow 確保動畫重新觸發
+                hintEl.style.display = '';  // clear inline display:none
+                void hintEl.offsetWidth;    // reflow to re-trigger animation
                 hintEl.classList.add('is-entering');
             }
 
@@ -3426,7 +3426,7 @@
                 if (_rules.length === 0) {
                     return;
                 }
-                // 有規則時收起提示
+                // Hide hint when rules are present
                 if (hintEl && hintEl.classList.contains('is-entering')) {
                     _hideNoRulesHint(hintEl);
                 }
