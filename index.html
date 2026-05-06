@@ -2846,6 +2846,9 @@
                         addRuleBtn.classList.remove('add-rule-btn-pulse');
                     }, { once: true });
 
+                    // Clear previous result
+                    resultEl.textContent = '';
+                    document.getElementById('result-hints').innerHTML = '';
                     _resetStrength();
                     return;
                 }
