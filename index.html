@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8" />
@@ -1169,6 +1169,34 @@
             animation: rule-btn-pulse-dark 0.5s ease 2;
         }
 
+        /* ── Export / Import buttons ─────────────────────────────── */
+        .rule-io-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .rule-io-btn:hover {
+            color: var(--accent);
+            border-color: var(--symbol-selected-border);
+            background: var(--symbol-selected-bg);
+        }
+
+        .rule-io-btn:hover {
+            border-color: var(--symbol-selected-border);
+            color: var(--accent);
+            background: var(--symbol-selected-bg);
+        }
+
         /* ── Cipher Picker Modal ──────────────────────────────────── */
         .cipher-picker-modal {
             display: none;
@@ -1674,6 +1702,14 @@
             </a>
         </div>
         <div class="bottom-bar-row">
+            <button class="rule-io-btn" id="export-rules-btn" type="button" data-i18n-title="rules.exportBtn" title="匯出設定">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><polyline points="9 15 12 18 15 15"/></svg>
+            </button>
+            <button class="rule-io-btn" id="import-rules-btn" type="button" data-i18n-title="rules.importBtn" title="匯入設定">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6"/><polyline points="9 15 12 12 15 15"/></svg>
+            </button>
+        </div>
+        <div class="bottom-bar-row">
             <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
                 <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -1874,6 +1910,9 @@
                     'strength.strong':     '強度：強',
                     'strength.veryStrong': '強度：非常強',
                     'strength.label':      '強度：',
+                    'rules.exportBtn': '匯出設定',
+                    'rules.importBtn': '匯入設定',
+                    'rules.importError': '檔案格式錯誤，無法匯入',
                 },
                 'en': {
                     'pageTitle': 'Deterministic Password Generator',
@@ -1969,6 +2008,9 @@
                     'strength.strong':     'Strength: Strong',
                     'strength.veryStrong': 'Strength: Very Strong',
                     'strength.label':      'Strength: ',
+                    'rules.exportBtn': 'Export Settings',
+                    'rules.importBtn': 'Import Settings',
+                    'rules.importError': 'Invalid file format, cannot import',
                 },
             };
 
@@ -3479,6 +3521,7 @@
                     type: item.type,
                     params: { ...item.params },
                 }));
+                _save();
                 _render();
             }
 
@@ -3546,6 +3589,101 @@
 
         RuleBuilder.init();
         document.getElementById('strength-bar-label').textContent = i18n.t('strength.label') + '-';
+
+        // ── Export / Import Rules ────────────────────────────────────
+        (() => {
+            function _captureProfile(name) {
+                return {
+                    name,
+                    rules: RuleBuilder.getRules(),
+                    symbols: [...document.querySelectorAll('.symbol-chip input[type="checkbox"]')]
+                        .filter(c => c.checked).map(c => c.value),
+                    length: parseInt(document.getElementById('enc-length').value),
+                    autoFill: {
+                        upper:  document.getElementById('auto-upper').checked,
+                        lower:  document.getElementById('auto-lower').checked,
+                        digit:  document.getElementById('auto-digit').checked,
+                        symbol: document.getElementById('auto-symbol').checked,
+                    },
+                };
+            }
+
+            function _applyProfile(profile) {
+                // Restore rules
+                RuleBuilder.restore(profile.rules);
+
+                // Restore symbols
+                if (Array.isArray(profile.symbols)) {
+                    document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => {
+                        c.checked = profile.symbols.includes(c.value);
+                    });
+                    const all = document.querySelectorAll('.symbol-chip input[type="checkbox"]');
+                    const selectAll = document.getElementById('symbol-select-all');
+                    selectAll.checked = [...all].every(c => c.checked);
+                    selectAll.indeterminate = !selectAll.checked && [...all].some(c => c.checked);
+                    StorageManager.set('prefs.symbols', profile.symbols);
+                }
+
+                // Restore length
+                if (typeof profile.length === 'number') {
+                    document.getElementById('enc-length').value = profile.length;
+                    StorageManager.set('prefs.length', profile.length);
+                    document.getElementById('enc-length').dispatchEvent(new Event('input'));
+                }
+
+                // Restore auto-fill
+                if (profile.autoFill && typeof profile.autoFill === 'object') {
+                    ['upper', 'lower', 'digit', 'symbol'].forEach(k => {
+                        const el = document.getElementById(`auto-${k}`);
+                        if (el) el.checked = profile.autoFill[k] ?? false;
+                    });
+                    StorageManager.set('prefs.autoFill', profile.autoFill);
+                }
+
+                // Refresh affine selects in case charset changed
+                RuleBuilder.refreshAllAffineSelects();
+            }
+
+            // Export
+            document.getElementById('export-rules-btn').addEventListener('click', () => {
+                const data = JSON.stringify({
+                    profiles: [_captureProfile('Default')],
+                }, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'pwd-settings.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // Import: load all profiles (apply first one now; full multi-profile support coming with tab UI)
+            document.getElementById('import-rules-btn').addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json,application/json';
+                input.addEventListener('change', () => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const parsed = JSON.parse(e.target.result);
+                            if (!parsed.profiles || !Array.isArray(parsed.profiles) || parsed.profiles.length === 0) throw new Error();
+                            // Store all profiles for future tab UI
+                            StorageManager.set('prefs.profiles', parsed.profiles);
+                            // Apply first profile to current view
+                            _applyProfile(parsed.profiles[0]);
+                        } catch {
+                            alert(i18n.t('rules.importError'));
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+                input.click();
+            });
+        })();
         // ────────────────────────────────────────────────────────────
     </script>
 </body>
