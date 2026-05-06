@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8" />
@@ -1169,6 +1169,28 @@
             animation: rule-btn-pulse-dark 0.5s ease 2;
         }
 
+        /* ── Export / Import buttons ─────────────────────────────── */
+        .rule-io-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .rule-io-btn:hover {
+            color: var(--accent);
+            border-color: var(--symbol-selected-border);
+            background: var(--symbol-selected-bg);
+        }
+
         /* ── Cipher Picker Modal ──────────────────────────────────── */
         .cipher-picker-modal {
             display: none;
@@ -1660,7 +1682,7 @@
 
     </div>
 
-    <div class="app-version">v1.3.8<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.4.0<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
         <div class="bottom-bar-row">
@@ -1672,6 +1694,26 @@
             <a class="github-btn" href="https://github.com/ccec1t91077/Cryptography" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
             </a>
+        </div>
+        <div class="bottom-bar-row">
+            <button class="rule-io-btn" id="export-rules-btn" type="button" data-i18n-title="rules.exportBtn" title="匯出設定">
+                <!-- Lucide: file-down -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                    <path d="M12 10v6"/>
+                    <path d="m9 13 3 3 3-3"/>
+                </svg>
+            </button>
+            <button class="rule-io-btn" id="import-rules-btn" type="button" data-i18n-title="rules.importBtn" title="匯入設定">
+                <!-- Lucide: file-up -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                    <path d="M12 12v6"/>
+                    <path d="m9 15 3-3 3 3"/>
+                </svg>
+            </button>
         </div>
         <div class="bottom-bar-row">
             <button class="dark-toggle" id="dark-toggle" type="button" data-i18n-title="common.darkToggle" title="切換暗色模式">
@@ -1874,6 +1916,9 @@
                     'strength.strong':     '強度：強',
                     'strength.veryStrong': '強度：非常強',
                     'strength.label':      '強度：',
+                    'rules.exportBtn': '匯出設定',
+                    'rules.importBtn': '匯入設定',
+                    'rules.importError': '檔案格式錯誤，無法匯入',
                 },
                 'en': {
                     'pageTitle': 'Deterministic Password Generator',
@@ -1969,6 +2014,9 @@
                     'strength.strong':     'Strength: Strong',
                     'strength.veryStrong': 'Strength: Very Strong',
                     'strength.label':      'Strength: ',
+                    'rules.exportBtn': 'Export Settings',
+                    'rules.importBtn': 'Import Settings',
+                    'rules.importError': 'Invalid file format, cannot import',
                 },
             };
 
@@ -2790,9 +2838,29 @@
                 // Clear all previous input error states
                 _clearAllInputErrors();
 
+                const rules = RuleBuilder.getRules();
+
+                if (rules.length === 0) {
+                    const addRuleBtn = document.getElementById('add-rule-btn');
+
+                    RuleBuilder.showNoRulesHint();
+
+                    addRuleBtn.classList.remove('add-rule-btn-pulse');
+                    void addRuleBtn.offsetWidth;
+                    addRuleBtn.classList.add('add-rule-btn-pulse');
+                    addRuleBtn.addEventListener('animationend', () => {
+                        addRuleBtn.classList.remove('add-rule-btn-pulse');
+                    }, { once: true });
+
+                    // Clear previous result
+                    resultEl.textContent = '';
+                    document.getElementById('result-hints').innerHTML = '';
+                    _resetStrength();
+                    return;
+                }
+
                 let hasError = false;
 
-                // Validate Password
                 if (!password) {
                     const plainInp = document.getElementById('enc-plain');
                     const plainErr = document.getElementById('enc-plain-error');
@@ -2804,8 +2872,6 @@
                     hasError = true;
                 }
 
-                const rules = RuleBuilder.getRules();
-
                 // Validate all rule parameters
                 const ruleCards = [...document.querySelectorAll('#rule-list .rule-card')];
                 for (let i = 0; i < rules.length; i++) {
@@ -2814,24 +2880,6 @@
                 }
 
                 if (hasError) {
-                    _resetStrength();
-                    return;
-                }
-
-                if (rules.length === 0) {
-                    const addRuleBtn = document.getElementById('add-rule-btn');
-
-                    // Show hint
-                    RuleBuilder.showNoRulesHint();
-
-                    // Pulse the Add Rule button
-                    addRuleBtn.classList.remove('add-rule-btn-pulse');
-                    void addRuleBtn.offsetWidth;
-                    addRuleBtn.classList.add('add-rule-btn-pulse');
-                    addRuleBtn.addEventListener('animationend', () => {
-                        addRuleBtn.classList.remove('add-rule-btn-pulse');
-                    }, { once: true });
-
                     _resetStrength();
                     return;
                 }
@@ -2909,11 +2957,11 @@
                             if (positions.length === 1) protectedPos.add(positions[0]);
                         });
 
-                        // 候選位置：排除受保護的位置
+                        // Candidate positions: exclude protected positions
                         const candidates = arr.map((_, i) => i).filter(i => !protectedPos.has(i));
                         if (candidates.length === 0) return;
 
-                        // 用 hash 確定性選位置與字元
+                        // Use hash to deterministically select position and character
                         const posIdx = _hash(seed + type.key + 'pos') % candidates.length;
                         const charIdx = _hash(seed + type.key + 'char') % type.set.length;
 
@@ -2925,7 +2973,7 @@
                 }
                 // ────────────────────────────────────────────────────
 
-                // 密碼強度提示
+                // Password strength hints
                 const hintsEl = document.getElementById('result-hints');
                 hintsEl.innerHTML = '';
                 const checks = [
@@ -2943,7 +2991,7 @@
                     }
                 });
 
-                // ── zxcvbn 密碼強度評估 ──────────────────────────────
+                // ── zxcvbn password strength estimation ─────────────────────
                 const strengthFill  = document.getElementById('strength-bar-fill');
                 const strengthLabel = document.getElementById('strength-bar-label');
 
@@ -2991,7 +3039,7 @@
             EncryptionManager.run();
         });
 
-        // ── 複製按鈕 ─────────────────────────────────────────────────
+        // ── Copy button ──────────────────────────────────────────────────
         (() => {
             const btn = document.querySelector('.copy-btn');
             const resultSpan = document.querySelector('.result-box span');
@@ -3011,8 +3059,8 @@
         })();
         // ────────────────────────────────────────────────────────────
 
-        // ── 儲存規則參數設定 ─────────────────────────────────────────
-        // 自動補充字元
+        // ── Save rule preferences ────────────────────────────────────────
+        // Auto-fill characters
         function _saveAutoFill() {
             StorageManager.set('prefs.autoFill', {
                 upper:  document.getElementById('auto-upper').checked,
@@ -3415,10 +3463,10 @@
             function showNoRulesHint() {
                 const hintEl = document.getElementById('no-rules-hint');
                 if (!hintEl) return;
-                // 已在顯示中則不重複觸發
+                // Skip if already visible
                 if (hintEl.classList.contains('is-entering')) return;
-                hintEl.style.display = '';  // 清除 inline display:none
-                void hintEl.offsetWidth;    // reflow 確保動畫重新觸發
+                hintEl.style.display = '';  // clear inline display:none
+                void hintEl.offsetWidth;    // reflow to re-trigger animation
                 hintEl.classList.add('is-entering');
             }
 
@@ -3427,10 +3475,9 @@
                 const hintEl = document.getElementById('no-rules-hint');
                 listEl.innerHTML = '';
                 if (_rules.length === 0) {
-                    showNoRulesHint();
                     return;
                 }
-                // 有規則時收起提示
+                // Hide hint when rules are present
                 if (hintEl && hintEl.classList.contains('is-entering')) {
                     _hideNoRulesHint(hintEl);
                 }
@@ -3483,6 +3530,7 @@
                     type: item.type,
                     params: { ...item.params },
                 }));
+                _save();
                 _render();
             }
 
@@ -3550,6 +3598,101 @@
 
         RuleBuilder.init();
         document.getElementById('strength-bar-label').textContent = i18n.t('strength.label') + '-';
+
+        // ── Export / Import Rules ────────────────────────────────────
+        (() => {
+            function _captureProfile(name) {
+                return {
+                    name,
+                    rules: RuleBuilder.getRules(),
+                    symbols: [...document.querySelectorAll('.symbol-chip input[type="checkbox"]')]
+                        .filter(c => c.checked).map(c => c.value),
+                    length: parseInt(document.getElementById('enc-length').value),
+                    autoFill: {
+                        upper:  document.getElementById('auto-upper').checked,
+                        lower:  document.getElementById('auto-lower').checked,
+                        digit:  document.getElementById('auto-digit').checked,
+                        symbol: document.getElementById('auto-symbol').checked,
+                    },
+                };
+            }
+
+            function _applyProfile(profile) {
+                // Restore rules
+                RuleBuilder.restore(profile.rules);
+
+                // Restore symbols
+                if (Array.isArray(profile.symbols)) {
+                    document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => {
+                        c.checked = profile.symbols.includes(c.value);
+                    });
+                    const all = document.querySelectorAll('.symbol-chip input[type="checkbox"]');
+                    const selectAll = document.getElementById('symbol-select-all');
+                    selectAll.checked = [...all].every(c => c.checked);
+                    selectAll.indeterminate = !selectAll.checked && [...all].some(c => c.checked);
+                    StorageManager.set('prefs.symbols', profile.symbols);
+                }
+
+                // Restore length
+                if (typeof profile.length === 'number') {
+                    document.getElementById('enc-length').value = profile.length;
+                    StorageManager.set('prefs.length', profile.length);
+                    document.getElementById('enc-length').dispatchEvent(new Event('input'));
+                }
+
+                // Restore auto-fill
+                if (profile.autoFill && typeof profile.autoFill === 'object') {
+                    ['upper', 'lower', 'digit', 'symbol'].forEach(k => {
+                        const el = document.getElementById(`auto-${k}`);
+                        if (el) el.checked = profile.autoFill[k] ?? false;
+                    });
+                    StorageManager.set('prefs.autoFill', profile.autoFill);
+                }
+
+                // Refresh affine selects in case charset changed
+                RuleBuilder.refreshAllAffineSelects();
+            }
+
+            // Export
+            document.getElementById('export-rules-btn').addEventListener('click', () => {
+                const data = JSON.stringify({
+                    profiles: [_captureProfile('Default')],
+                }, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'pwd-settings.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // Import: load all profiles (apply first one now; full multi-profile support coming with tab UI)
+            document.getElementById('import-rules-btn').addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json,application/json';
+                input.addEventListener('change', () => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const parsed = JSON.parse(e.target.result);
+                            if (!parsed.profiles || !Array.isArray(parsed.profiles) || parsed.profiles.length === 0) throw new Error();
+                            // Store all profiles for future tab UI
+                            StorageManager.set('prefs.profiles', parsed.profiles);
+                            // Apply first profile to current view
+                            _applyProfile(parsed.profiles[0]);
+                        } catch {
+                            alert(i18n.t('rules.importError'));
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+                input.click();
+            });
+        })();
         // ────────────────────────────────────────────────────────────
     </script>
 </body>
