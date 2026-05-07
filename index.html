@@ -2173,16 +2173,26 @@
         const FirstUseNotice = (() => {
             const modal   = document.getElementById('first-use-modal');
             const closeBtn = document.getElementById('first-use-close');
+            let _pendingRun = false;
 
-            function show() {
+            function show(runOnClose = false) {
                 modal.classList.add('is-visible');
+                _pendingRun = runOnClose;
+            }
+
+            function _close() {
+                modal.classList.remove('is-visible');
                 StorageManager.set('flags.firstUseSeen', true);
+                if (_pendingRun) {
+                    _pendingRun = false;
+                    EncryptionManager.run();
+                }
             }
 
             function init() {
-                closeBtn.addEventListener('click', () => modal.classList.remove('is-visible'));
-                modal.querySelector('.first-use-overlay').addEventListener('click', () => modal.classList.remove('is-visible'));
-                document.getElementById('about-btn').addEventListener('click', () => show());
+                closeBtn.addEventListener('click', _close);
+                modal.querySelector('.first-use-overlay').addEventListener('click', _close);
+                document.getElementById('about-btn').addEventListener('click', () => show(false));
             }
 
             return { show, init };
@@ -3034,7 +3044,8 @@
 
         document.querySelector('.btn-primary').addEventListener('click', () => {
             if (!StorageManager.get('flags.firstUseSeen', false)) {
-                FirstUseNotice.show();
+                FirstUseNotice.show(true);
+                return;
             }
             EncryptionManager.run();
         });
