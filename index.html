@@ -261,6 +261,15 @@
             margin-top: 5px;
         }
 
+        .form-hint-accent {
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+            text-decoration-style: dotted;
+            text-underline-offset: 2px;
+        }
+
         input[type="text"],
         input[type="password"],
         input[type="number"] {
@@ -616,6 +625,35 @@
             color: var(--hint-tag-color);
         }
 
+        .charset-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            user-select: none;
+        }
+
+        .charset-tag {
+            font-size: 11px;
+            font-family: var(--mono);
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--symbol-selected-bg);
+            border: 1px solid var(--symbol-selected-border);
+            color: var(--accent);
+            user-select: none;
+        }
+
+        .charset-tag-label {
+            font-size: 11px;
+            font-family: var(--sans);
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
         .strength-bar-wrap {
             margin-top: 10px;
         }
@@ -647,6 +685,8 @@
             border-radius: var(--radius-sm);
             padding: 10px 12px;
         }
+
+
 
         .symbol-toggle-row {
             display: flex;
@@ -1639,11 +1679,24 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <div class="form-label">
+                        <span data-i18n="tool.charsetPreviewLabel" class="form-hint-accent">當前字元表</span>
+                        <span class="optional-tag" id="charset-count"></span>
+                        <span class="hint-wrap">
+                            <span class="hint-icon"></span>
+                            <span class="hint-tooltip" data-i18n="tool.charsetPreviewHint">最終密碼所使用的完整字元範圍，由大寫英文、小寫英文、數字及已勾選的特殊符號組成。</span>
+                        </span>
+                    </div>
+                    <div class="charset-tags" id="charset-tags"></div>
+                </div>
                 <button class="btn-primary" type="button" data-i18n="tool.generateBtn">🔒 產生登入用密碼</button>
 
                 <div>
                     <hr class="divider" />
-                    <div class="result-label" data-i18n="tool.resultLabel">加密後的登入密碼</div>
+                    <div class="result-label">
+                        <span data-i18n="tool.resultLabel">加密後的登入密碼</span>
+                    </div>
                     <div class="result-box">
                         <button class="copy-btn" type="button" data-i18n-title="tool.copyBtn" title="複製">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1682,7 +1735,7 @@
 
     </div>
 
-    <div class="app-version">v1.4.0<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.4.2<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
         <div class="bottom-bar-row">
@@ -1843,6 +1896,8 @@
                     'tool.saltPlaceholder': '例如：randomsalt123',
                     'tool.symbolsLabel': '密碼含特殊符號',
                     'tool.symbolsHint': '勾選允許出現在加密結果中的特殊符號，取消勾選的符號將被排除。',
+                    'tool.charsetPreviewLabel': '當前字元表',
+                    'tool.charsetPreviewHint': '最終密碼所使用的完整字元範圍，由大寫英文、小寫英文、數字及已勾選的特殊符號組成。',
                     'tool.lengthLabel': '密碼長度',
                     'tool.autoFillLabel': '自動補充字元',
                     'tool.autoFillHint': '勾選後，若產生的密碼缺少該類型字元，將自動替換密碼中的部分字元以確保包含。',
@@ -1875,10 +1930,11 @@
                     'rules.vigenere.name': '維吉尼亞密碼',
                     'rules.vigenere.desc': '使用一組自訂的金鑰字串讓每個字元的位移量各不相同，避免規律性被發現。金鑰越長、越隨機，加密結果就越難被破解。',
                     'rules.vigenere.keyLabel': '金鑰',
-                    'rules.vigenere.keyHint': '注意：金鑰中不在字元表內的字元會被忽略',
+                    'rules.vigenere.keyHint': '注意：金鑰中不在<span class="form-hint-accent">當前字元表</span>內的字元會被忽略',
                     'rules.playfair.name': '波雷費密碼',
                     'rules.playfair.desc': '透過一組關鍵字將字元打亂成一張對照表，再以兩個字元為一組進行替換。關鍵字決定對照表的排列方式，不同的關鍵字會產生完全不同的加密結果。',
                     'rules.playfair.keyLabel': '關鍵字',
+                    'rules.playfair.keyHint': '注意：關鍵字中不在<span class="form-hint-accent">當前字元表</span>內的字元會被忽略',
                     'rules.hill.name': '希爾密碼',
                     'rules.hill.desc': '使用四個數字組成的金鑰，將密碼中的字元兩兩一組進行混合運算，讓每對字元互相影響彼此的加密結果，難以單獨還原。',
                     'rules.hill.matrixLabel': '金鑰矩陣（2×2）',
@@ -1941,6 +1997,8 @@
                     'tool.saltPlaceholder': 'e.g. randomsalt123',
                     'tool.symbolsLabel': 'Include special characters',
                     'tool.symbolsHint': 'Check the special characters you want to allow in the output. Unchecked ones will be excluded.',
+                    'tool.charsetPreviewLabel': 'Current Charset',
+                    'tool.charsetPreviewHint': 'The full set of characters used in the final password — includes uppercase, lowercase, digits, and any checked special characters.',
                     'tool.lengthLabel': 'Password length',
                     'tool.autoFillLabel': 'Auto-fill character types',
                     'tool.autoFillHint': 'When enabled, if the generated password is missing a character type, some characters will be replaced to ensure it is included.',
@@ -1973,10 +2031,11 @@
                     'rules.vigenere.name': 'Vigenère Cipher',
                     'rules.vigenere.desc': 'Uses a custom key string so each character is shifted by a different amount, preventing patterns from being detected. A longer, more random key makes the output harder to crack.',
                     'rules.vigenere.keyLabel': 'Key',
-                    'rules.vigenere.keyHint': 'Note: Characters in the key that are not in the charset will be ignored',
+                    'rules.vigenere.keyHint': 'Note: Characters in the key that are not in the <span class="form-hint-accent">current charset</span> will be ignored',
                     'rules.playfair.name': 'Playfair Cipher',
                     'rules.playfair.desc': 'Uses a keyword to scramble characters into a lookup table, then encrypts them in pairs. The keyword determines the table layout — different keywords produce completely different results.',
                     'rules.playfair.keyLabel': 'Keyword',
+                    'rules.playfair.keyHint': 'Note: Characters in the keyword that are not in the <span class="form-hint-accent">current charset</span> will be ignored',
                     'rules.hill.name': 'Hill Cipher',
                     'rules.hill.desc': 'Uses a key made of four numbers to mix pairs of characters through matrix multiplication. Each pair of characters influences the other\'s encrypted output, making individual characters hard to recover.',
                     'rules.hill.matrixLabel': 'Key matrix (2×2)',
@@ -2234,6 +2293,7 @@
                 StorageManager.set('prefs.lang', next);
                 RuleBuilder.refreshNames();
                 EncryptionManager.refreshLang();
+                _updateCharsetPreview();
             });
         })();
         // ────────────────────────────────────────────────────────────
@@ -2303,6 +2363,37 @@
             document.querySelectorAll('._charset-hint').forEach(el => {
                 if (typeof el._updateCharsetHint === 'function') el._updateCharsetHint();
             });
+            // Update charset preview
+            _updateCharsetPreview();
+        }
+
+        function _updateCharsetPreview() {
+            const charset = CharsetManager.get();
+            const container = document.getElementById('charset-tags');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Fixed ranges
+            const ranges = ['A–Z', 'a–z', '0–9'];
+            ranges.forEach(text => {
+                const tag = document.createElement('span');
+                tag.className = 'charset-tag';
+                tag.textContent = text;
+                container.appendChild(tag);
+            });
+
+            // Symbol tag — only if any symbols are checked
+            const symbols = charset.replace(/[A-Za-z0-9]/g, '');
+            if (symbols.length > 0) {
+                const tag = document.createElement('span');
+                tag.className = 'charset-tag';
+                tag.textContent = symbols;
+                container.appendChild(tag);
+            }
+
+            // Total count — update label tag
+            const countEl = document.getElementById('charset-count');
+            if (countEl) countEl.textContent = charset.length + ' chars';
         }
         selectAll.addEventListener('change', () => {
             chips.forEach(c => c.checked = selectAll.checked);
@@ -2313,6 +2404,9 @@
             selectAll.indeterminate = !selectAll.checked && [...chips].some(c => c.checked);
             _saveSymbols();
         }));
+
+        // Initialize charset preview on page load
+        _updateCharsetPreview();
 
         // Password length range slider
         const lengthInput = document.getElementById('enc-length');
@@ -2657,6 +2751,7 @@
                     inp.parentNode.insertBefore(msg, inp.nextSibling);
                 }
                 msg.textContent = i18n.t(msgKey);
+                msg.dataset.i18nKey = msgKey;
                 msg.style.display = 'block';
                 // Clear error on input: remove error state as soon as user starts typing
                 if (!inp._errorListenerAdded) {
@@ -2690,6 +2785,7 @@
                         matrix.parentNode.insertBefore(msg, matrix.nextSibling);
                     }
                     msg.textContent = i18n.t(msgKey);
+                    msg.dataset.i18nKey = msgKey;
                     msg.style.display = 'block';
                     // Clear error on input: remove per-cell error when user edits any cell
                     inputs.forEach(inp => {
@@ -2720,6 +2816,7 @@
                         matrix.parentNode.insertBefore(msg, matrix.nextSibling);
                     }
                     msg.textContent = i18n.t(msgKey);
+                    msg.dataset.i18nKey = msgKey;
                     msg.style.display = 'block';
                     inputs.forEach(inp => {
                         if (!inp._errorListenerAdded) {
@@ -2778,7 +2875,7 @@
                                     sel.parentNode.insertBefore(msg, sel.nextSibling);
                                 }
                             }
-                            if (msg) { msg.textContent = i18n.t('err.affineA'); msg.style.display = 'block'; }
+                            if (msg) { msg.textContent = i18n.t('err.affineA'); msg.dataset.i18nKey = 'err.affineA'; msg.style.display = 'block'; }
                         }
                         return 'err.affineA';
                     }
@@ -2877,6 +2974,7 @@
                     plainInp.classList.add('input-error');
                     if (plainErr) {
                         plainErr.textContent = i18n.t('err.emptyPassword');
+                        plainErr.dataset.i18nKey = 'err.emptyPassword';
                         plainErr.style.display = 'block';
                     }
                     hasError = true;
@@ -3037,6 +3135,12 @@
                 } else {
                     lbl.textContent = i18n.t('strength.label') + '-';
                 }
+                // Re-translate all visible input error messages
+                document.querySelectorAll('.input-error-msg').forEach(el => {
+                    if (el.style.display !== 'none' && el.dataset.i18nKey) {
+                        el.textContent = i18n.t(el.dataset.i18nKey);
+                    }
+                });
             }
 
             return { run, refreshLang };
@@ -3279,8 +3383,8 @@
                     fg.appendChild(inp);
                     const vigHint = document.createElement('div');
                     vigHint.className = 'form-hint _charset-hint';
-                    vigHint.textContent = i18n.t('rules.vigenere.keyHint');
-                    vigHint.dataset.i18nCard = 'text:rules.vigenere.keyHint';
+                    vigHint.innerHTML = i18n.t('rules.vigenere.keyHint');
+                    vigHint.dataset.i18nCard = 'html:rules.vigenere.keyHint';
                     fg.appendChild(vigHint);
                     body.appendChild(fg);
 
@@ -3303,6 +3407,11 @@
                     });
                     fg.appendChild(lbl);
                     fg.appendChild(inp);
+                    const playfairHint = document.createElement('div');
+                    playfairHint.className = 'form-hint';
+                    playfairHint.innerHTML = i18n.t('rules.playfair.keyHint');
+                    playfairHint.dataset.i18nCard = 'html:rules.playfair.keyHint';
+                    fg.appendChild(playfairHint);
                     body.appendChild(fg);
 
                 } else if (type === 'hill') {
@@ -3569,6 +3678,7 @@
                         }
                         const val = i18n.t(key);
                         if (attr === 'text') el.textContent = val;
+                        else if (attr === 'html') el.innerHTML = val;
                         else if (attr === 'placeholder') el.placeholder = val;
                         else if (attr === 'title') el.title = val;
                     });
