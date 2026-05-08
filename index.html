@@ -1524,6 +1524,144 @@
             left: 0;
             color: var(--hint-tag-color);
         }
+
+        /* ── Tour ─────────────────────────────────────────────────── */
+        .tour-active body {
+            overflow: hidden;
+        }
+
+        .tour-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+            pointer-events: all;
+        }
+
+        .tour-backdrop-piece {
+            position: absolute;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .tour-highlight-ring {
+            position: fixed;
+            z-index: 1101;
+            border-radius: 0;
+            outline: 2.5px solid var(--accent);
+            outline-offset: 3px;
+            pointer-events: none;
+        }
+
+        .tour-tooltip {
+            position: fixed;
+            z-index: 1102;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+            padding: 18px 20px 16px;
+            width: 300px;
+            pointer-events: all;
+            opacity: 0;
+            transition: opacity 0.18s ease;
+        }
+
+        .tour-tooltip.is-visible { opacity: 1; }
+
+        .tour-tooltip-step {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .tour-tooltip-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .tour-tooltip-body {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 16px;
+        }
+
+        .tour-tooltip-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .tour-btn-skip {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--sans);
+            padding: 0;
+            transition: color 0.15s ease;
+        }
+
+        .tour-btn-skip:hover { color: var(--text-secondary); }
+
+        .tour-btn-next {
+            padding: 7px 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--sans);
+            transition: background 0.15s ease;
+        }
+
+        .tour-btn-next:hover { background: var(--accent-hover); }
+
+        .tour-progress {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .tour-progress-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: background 0.15s ease;
+        }
+
+        .tour-progress-dot.is-active { background: var(--accent); }
+
+        .tour-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .tour-btn:hover {
+            color: var(--accent);
+            border-color: var(--symbol-selected-border);
+            background: var(--symbol-selected-bg);
+        }
         /* ─────────────────────────────────────────────────────────── */
     </style>
 </head>
@@ -1735,9 +1873,17 @@
 
     </div>
 
-    <div class="app-version">v1.4.2<br>© 2026 ccec1t91077</div>
+    <div class="app-version">v1.5.0<br>© 2026 ccec1t91077</div>
 
     <div class="bottom-bar">
+        <div class="bottom-bar-row">
+            <button class="tour-btn" id="tour-btn" type="button" data-i18n-title="tour.btnTitle" title="操作導覽">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+            </button>
+        </div>
         <div class="bottom-bar-row">
             <button class="github-btn" id="about-btn" type="button" data-i18n-title="common.aboutBtn" title="關於此工具">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -1833,6 +1979,25 @@
                     <div class="cipher-picker-card-desc" data-i18n="rules.columnar.desc">將字元依序填入指定欄數的表格，再依金鑰字母的排序決定讀取欄位的順序，打亂字元位置而不改變字元本身。</div>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Tour -->
+    <div class="tour-backdrop" id="tour-backdrop" style="display:none">
+        <div class="tour-backdrop-piece" id="tour-bd-top"></div>
+        <div class="tour-backdrop-piece" id="tour-bd-bottom"></div>
+        <div class="tour-backdrop-piece" id="tour-bd-left"></div>
+        <div class="tour-backdrop-piece" id="tour-bd-right"></div>
+    </div>
+    <div class="tour-highlight-ring" id="tour-highlight" style="display:none"></div>
+    <div class="tour-tooltip" id="tour-tooltip" style="display:none">
+        <div class="tour-tooltip-step" id="tour-step-label"></div>
+        <div class="tour-tooltip-title" id="tour-title"></div>
+        <div class="tour-tooltip-body" id="tour-body"></div>
+        <div class="tour-tooltip-footer">
+            <button class="tour-btn-skip" id="tour-skip" type="button"></button>
+            <div class="tour-progress" id="tour-progress"></div>
+            <button class="tour-btn-next" id="tour-next" type="button"></button>
         </div>
     </div>
 
@@ -1975,6 +2140,31 @@
                     'rules.exportBtn': '匯出設定',
                     'rules.importBtn': '匯入設定',
                     'rules.importError': '檔案格式錯誤，無法匯入',
+                    'tour.btnTitle': '操作導覽',
+                    'tour.skip': '離開導覽',
+                    'tour.next': '下一步',
+                    'tour.finish': '完成',
+                    'tour.stepLabel': '步驟 {current} / {total}',
+                    'tour.step1.title': '新增加密規則',
+                    'tour.step1.body': '點擊「新增規則」按鈕，選擇一種加密方式加入規則列表。你可以新增多條規則，密碼會依序套用每一條。',
+                    'tour.step2.title': '選擇加密方式',
+                    'tour.step2.body': '從這裡選擇一種加密演算法。每種演算法有不同的參數與特性，可以組合多種規則來提升加密強度。',
+                    'tour.step3.title': '填入規則參數',
+                    'tour.step3.body': '為剛新增的規則填入參數。不同的規則有不同的參數，例如凱薩密碼需要填入位移量。',
+                    'tour.step4.title': '輸入明文密碼',
+                    'tour.step4.body': '在這裡輸入你記在備忘錄的明文密碼，這是加密的原始輸入。相同的明文密碼搭配相同的規則，每次都會產生相同的結果。',
+                    'tour.step5.title': '填入 Salt（選填）',
+                    'tour.step5.body': 'Salt 是一個額外的字串，可以讓相同的明文密碼為不同網站產生不同的結果。例如填入網站名稱作為 Salt。',
+                    'tour.step6.title': '調整特殊符號',
+                    'tour.step6.body': '勾選允許出現在結果中的特殊符號，取消勾選的符號將從字元表中排除，影響所有加密規則的運算結果。',
+                    'tour.step7.title': '調整密碼長度',
+                    'tour.step7.body': '拖曳滑桿設定最終密碼的長度，範圍為 6 到 24 個字元。',
+                    'tour.step8.title': '自動補充字元',
+                    'tour.step8.body': '勾選後，若產生的密碼缺少該類型字元，會自動替換部分字元以確保包含。這讓密碼更容易符合各網站的密碼規則。',
+                    'tour.step9.title': '產生加密密碼',
+                    'tour.step9.body': '點擊按鈕產生加密後的登入密碼。所有運算在瀏覽器本地執行，不會傳送任何資料。',
+                    'tour.step10.title': '複製並使用',
+                    'tour.step10.body': '這裡顯示加密後的密碼，點擊右側複製按鈕即可複製。下方的強度條顯示密碼的強度評估。',
                 },
                 'en': {
                     'pageTitle': 'Deterministic Password Generator',
@@ -2076,6 +2266,31 @@
                     'rules.exportBtn': 'Export Settings',
                     'rules.importBtn': 'Import Settings',
                     'rules.importError': 'Invalid file format, cannot import',
+                    'tour.btnTitle': 'Tour',
+                    'tour.skip': 'Exit Tour',
+                    'tour.next': 'Next',
+                    'tour.finish': 'Finish',
+                    'tour.stepLabel': 'Step {current} of {total}',
+                    'tour.step1.title': 'Add an Encryption Rule',
+                    'tour.step1.body': 'Click "Add Rule" to choose an encryption method and add it to the rule list. You can add multiple rules — the password will be encrypted through each one in order.',
+                    'tour.step2.title': 'Choose a Cipher',
+                    'tour.step2.body': 'Select an encryption algorithm from this list. Each has different parameters and characteristics. Combining multiple rules increases the overall encryption strength.',
+                    'tour.step3.title': 'Fill in Rule Parameters',
+                    'tour.step3.body': 'Enter the parameters for the rule you just added. Different rules require different inputs — for example, Caesar cipher needs a shift value.',
+                    'tour.step4.title': 'Enter Your Password',
+                    'tour.step4.body': 'Type the plain-text password you keep in your notes. This is the raw input for encryption. The same password with the same rules always produces the same result.',
+                    'tour.step5.title': 'Enter a Salt (Optional)',
+                    'tour.step5.body': 'A Salt is an extra string that makes the same plain-text password produce different results for different sites. Try using the site name as your Salt.',
+                    'tour.step6.title': 'Adjust Special Characters',
+                    'tour.step6.body': 'Check which special characters are allowed in the output. Unchecked ones will be excluded from the charset, affecting all encryption rule calculations.',
+                    'tour.step7.title': 'Set Password Length',
+                    'tour.step7.body': 'Drag the slider to set the final password length, from 6 to 24 characters. Any overflow is folded back into the earlier portion so no information is lost.',
+                    'tour.step8.title': 'Auto-fill Character Types',
+                    'tour.step8.body': 'When enabled, if the generated password is missing a character type, some characters will be replaced to ensure it is included — helping meet common password requirements.',
+                    'tour.step9.title': 'Generate the Password',
+                    'tour.step9.body': 'Click the button to generate your encrypted login password. All processing happens locally in your browser — nothing is sent anywhere.',
+                    'tour.step10.title': 'Copy and Use',
+                    'tour.step10.body': 'Your encrypted password appears here. Click the copy button on the right to copy it. The strength bar below shows an estimate of the password strength.',
                 },
             };
 
@@ -2178,6 +2393,7 @@
             }
 
             function set(path, value) {
+                if (_paused) return;
                 const keys = path.split('.');
                 let cur = _store;
                 for (let i = 0; i < keys.length - 1; i++) {
@@ -2190,7 +2406,11 @@
                 _persist();
             }
 
-            return { init, get, set };
+            let _paused = false;
+            function pause()  { _paused = true; }
+            function resume() { _paused = false; }
+
+            return { init, get, set, pause, resume };
         })();
 
         StorageManager.init();
@@ -3719,6 +3939,359 @@
 
         RuleBuilder.init();
         document.getElementById('strength-bar-label').textContent = i18n.t('strength.label') + '-';
+
+        // ── Tour ─────────────────────────────────────────────────────
+        const Tour = (() => {
+            let _active = false;
+            let _step   = 0;
+            let _plainValue   = '';
+            let _saltValue    = '';
+            let _scrollY      = 0;
+            let _resultText   = '';
+            let _strengthW    = '';
+            let _strengthBg   = '';
+            let _strengthLbl  = '';
+            const PAD = 6;
+
+            const STEPS = [
+                { sel: '#add-rule-btn',          pos: 'right',  titleKey: 'tour.step1.title', bodyKey: 'tour.step1.body' },
+                { sel: '.cipher-picker-content', pos: 'right',  titleKey: 'tour.step2.title', bodyKey: 'tour.step2.body' },
+                { sel: '#rule-list',             pos: 'right',  titleKey: 'tour.step3.title', bodyKey: 'tour.step3.body' },
+                { sel: '#enc-plain',             pos: 'bottom', titleKey: 'tour.step4.title', bodyKey: 'tour.step4.body' },
+                { sel: '#enc-salt',              pos: 'bottom', titleKey: 'tour.step5.title', bodyKey: 'tour.step5.body' },
+                { sel: '.symbol-group',          pos: 'bottom', titleKey: 'tour.step6.title', bodyKey: 'tour.step6.body' },
+                { sel: '#enc-length',            pos: 'bottom', titleKey: 'tour.step7.title', bodyKey: 'tour.step7.body' },
+                { sel: '.auto-fill-group',       pos: 'top',    titleKey: 'tour.step8.title', bodyKey: 'tour.step8.body' },
+                { sel: '.btn-primary',           pos: 'top',    titleKey: 'tour.step9.title', bodyKey: 'tour.step9.body' },
+                { sel: '.result-box',            pos: 'top',    titleKey: 'tour.step10.title', bodyKey: 'tour.step10.body' },
+            ];
+
+            const _backdrop = document.getElementById('tour-backdrop');
+            const _bdTop    = document.getElementById('tour-bd-top');
+            const _bdBot    = document.getElementById('tour-bd-bottom');
+            const _bdLeft   = document.getElementById('tour-bd-left');
+            const _bdRight  = document.getElementById('tour-bd-right');
+            const _ring     = document.getElementById('tour-highlight');
+            const _tooltip  = document.getElementById('tour-tooltip');
+            const _stepLbl  = document.getElementById('tour-step-label');
+            const _titleEl  = document.getElementById('tour-title');
+            const _bodyEl   = document.getElementById('tour-body');
+            const _skipBtn  = document.getElementById('tour-skip');
+            const _nextBtn  = document.getElementById('tour-next');
+            const _progress = document.getElementById('tour-progress');
+
+            // ── Restore from localStorage ─────────────────────────────
+            function _restoreFromStorage() {
+                // Rules
+                const savedRules = StorageManager.get('prefs.ruleList');
+                RuleBuilder.restore(savedRules || []);
+                // Inputs — restore from pre-tour values (not in localStorage)
+                document.getElementById('enc-plain').value = _plainValue;
+                document.getElementById('enc-salt').value  = _saltValue;
+                // Length
+                const savedLength = StorageManager.get('prefs.length', 8);
+                const lenInp = document.getElementById('enc-length');
+                lenInp.value = savedLength;
+                lenInp.dispatchEvent(new Event('input'));
+                // Symbols
+                const savedSymbols = StorageManager.get('prefs.symbols');
+                document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => {
+                    c.checked = savedSymbols ? savedSymbols.includes(c.value) : true;
+                });
+                const sa = document.getElementById('symbol-select-all');
+                const ch = document.querySelectorAll('.symbol-chip input[type="checkbox"]');
+                sa.checked = [...ch].every(c => c.checked);
+                sa.indeterminate = !sa.checked && [...ch].some(c => c.checked);
+                _saveSymbols();
+                // Auto-fill
+                const savedAutoFill = StorageManager.get('prefs.autoFill');
+                ['upper','lower','digit','symbol'].forEach(k => {
+                    document.getElementById('auto-' + k).checked = savedAutoFill ? (savedAutoFill[k] ?? true) : true;
+                });
+                // Restore result and strength bar from pre-tour state
+                document.querySelector('.result-box span').textContent        = _resultText;
+                document.getElementById('strength-bar-fill').style.width      = _strengthW;
+                document.getElementById('strength-bar-fill').style.background = _strengthBg;
+                document.getElementById('strength-bar-label').textContent     = _strengthLbl;
+                // Restore scroll position
+                window.scrollTo({ top: _scrollY, behavior: 'instant' });
+            }
+
+            // ── Layout ────────────────────────────────────────────────
+            function _updateLayout(r) {
+                const t = r.top    - PAD;
+                const l = r.left   - PAD;
+                const w = r.width  + PAD * 2;
+                const h = r.height + PAD * 2;
+                _bdTop.style.cssText   = 'top:0;left:0;right:0;height:' + Math.max(0, t) + 'px';
+                _bdBot.style.cssText   = 'top:' + (t + h) + 'px;left:0;right:0;bottom:0';
+                _bdLeft.style.cssText  = 'top:' + t + 'px;left:0;width:' + Math.max(0, l) + 'px;height:' + h + 'px';
+                _bdRight.style.cssText = 'top:' + t + 'px;left:' + (l + w) + 'px;right:0;height:' + h + 'px';
+                _ring.style.cssText    = 'display:block;top:' + t + 'px;left:' + l + 'px;width:' + w + 'px;height:' + h + 'px';
+            }
+
+            function _fullBackdrop() {
+                _bdTop.style.cssText   = 'top:0;left:0;right:0;bottom:0';
+                _bdBot.style.cssText   = 'display:none';
+                _bdLeft.style.cssText  = 'display:none';
+                _bdRight.style.cssText = 'display:none';
+                _ring.style.display    = 'none';
+            }
+
+            function _placeTooltip(r, pos) {
+                const MARGIN = 14;
+                const TW = 300;
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                // Measure height before showing
+                _tooltip.style.visibility = 'hidden';
+                _tooltip.style.display    = 'block';
+                const th = _tooltip.offsetHeight;
+                _tooltip.style.visibility = '';
+
+                let top, left;
+                if (!r) {
+                    top  = vh / 2 - th / 2;
+                    left = vw / 2 - TW / 2;
+                } else {
+                    const t = r.top  - PAD, l = r.left - PAD;
+                    const w = r.width + PAD * 2, h = r.height + PAD * 2;
+                    const cx = l + w / 2; // target center x
+
+                    // Candidate positions keyed by direction
+                    const C = {
+                        right:  { top: t + h/2 - th/2, left: l + w + MARGIN },
+                        left:   { top: t + h/2 - th/2, left: l - TW - MARGIN },
+                        top:    { top: t - th - MARGIN, left: cx - TW/2 },
+                        bottom: { top: t + h + MARGIN,  left: cx - TW/2 },
+                    };
+
+                    // Preferred order: opposite direction first, then others
+                    const opposite = { right: 'left', left: 'right', top: 'bottom', bottom: 'top' };
+                    const all = ['right', 'left', 'top', 'bottom'];
+                    const ordered = [
+                        pos,
+                        opposite[pos],
+                        ...all.filter(d => d !== pos && d !== opposite[pos]),
+                    ].map(d => C[d]);
+
+                    function _clamp(c) {
+                        return {
+                            top:  Math.max(MARGIN, Math.min(c.top,  vh - th - MARGIN)),
+                            left: Math.max(MARGIN, Math.min(c.left, vw - TW - MARGIN)),
+                        };
+                    }
+
+                    function _overlaps(c) {
+                        return c.left < l + w && c.left + TW > l &&
+                               c.top  < t + h && c.top  + th > t;
+                    }
+
+                    // Pick first candidate that doesn't overlap after clamping
+                    let chosen = null;
+                    for (const c of ordered) {
+                        const clamped = _clamp(c);
+                        if (!_overlaps(clamped)) { chosen = clamped; break; }
+                    }
+
+                    // Fallback: pick the clamped candidate with least overlap area
+                    if (!chosen) {
+                        chosen = ordered.map(_clamp).reduce((best, c) => {
+                            const ox = Math.max(0, Math.min(c.left + TW, l + w) - Math.max(c.left, l));
+                            const oy = Math.max(0, Math.min(c.top  + th, t + h) - Math.max(c.top,  t));
+                            const area = ox * oy;
+                            return area < best.area ? { ...c, area } : best;
+                        }, { ...(_clamp(ordered[0])), area: Infinity });
+                    }
+
+                    top  = chosen.top;
+                    left = chosen.left;
+                }
+                _tooltip.style.top  = top  + 'px';
+                _tooltip.style.left = left + 'px';
+            }
+
+            // ── Step preparation ──────────────────────────────────────
+            function _prepareStep(i) {
+                const picker = document.getElementById('cipher-picker-modal');
+                if (i === 1) {
+                    picker.classList.add('is-visible');
+                } else {
+                    picker.classList.remove('is-visible');
+                }
+                // Step 3: add demo caesar rule with a preset shift value
+                if (i === 2 && RuleBuilder.getRules().length === 0) {
+                    RuleBuilder.addRule('caesar');
+                    // Set demo shift value on the newly created card
+                    const shiftInp = document.querySelector('#rule-list .rule-card input[type="number"]');
+                    if (shiftInp) {
+                        shiftInp.value = '3';
+                        shiftInp.dispatchEvent(new Event('input'));
+                    }
+                }
+                // Step 4: demo password
+                if (i === 3 && !document.getElementById('enc-plain').value) {
+                    document.getElementById('enc-plain').value = 'mypassword';
+                }
+                // Step 5: demo salt
+                if (i === 4 && !document.getElementById('enc-salt').value) {
+                    document.getElementById('enc-salt').value = 'example.com';
+                }
+                // Step 9: ensure all symbols are checked before generate step
+                if (i === 8) {
+                    document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => {
+                        c.checked = true;
+                    });
+                    document.getElementById('symbol-select-all').checked = true;
+                    document.getElementById('symbol-select-all').indeterminate = false;
+                    _saveSymbols();
+                }
+                // Step 10: run encryption to show result, scroll result into view
+                if (i === 9) {
+                    if (!document.getElementById('enc-plain').value)
+                        document.getElementById('enc-plain').value = 'mypassword';
+                    EncryptionManager.run();
+                    // Scroll to result without unlocking (JS scrollTop works even with overflow:hidden)
+                    const resultBox = document.querySelector('.result-box');
+                    if (resultBox) {
+                        const targetTop = resultBox.getBoundingClientRect().top + window.scrollY - (window.innerHeight / 2) + (resultBox.offsetHeight / 2);
+                        document.documentElement.scrollTop = targetTop;
+                        document.body.scrollTop = targetTop;
+                    }
+                }
+            }
+
+            // ── Render ────────────────────────────────────────────────
+            function _render(i) {
+                const step   = STEPS[i];
+                const total  = STEPS.length;
+                const isLast = i === total - 1;
+
+                // Hide tooltip before repositioning to avoid flash
+                _tooltip.classList.remove('is-visible');
+                _tooltip.style.opacity = '0';
+
+                _stepLbl.textContent = i18n.t('tour.stepLabel')
+                    .replace('{current}', i + 1).replace('{total}', total);
+                _titleEl.textContent = i18n.t(step.titleKey);
+                _bodyEl.textContent  = i18n.t(step.bodyKey);
+                _skipBtn.textContent = i18n.t('tour.skip');
+                _nextBtn.textContent = isLast ? i18n.t('tour.finish') : i18n.t('tour.next');
+
+                _progress.innerHTML = '';
+                STEPS.forEach((_, idx) => {
+                    const d = document.createElement('div');
+                    d.className = 'tour-progress-dot' + (idx === i ? ' is-active' : '');
+                    _progress.appendChild(d);
+                });
+
+                const targetEl = document.querySelector(step.sel);
+
+                // Always scroll target to center of viewport before calculating position
+                if (targetEl) {
+                    const rect = targetEl.getBoundingClientRect();
+                    const vh = window.innerHeight;
+                    const targetScrollTop = document.documentElement.scrollTop + rect.top - vh / 2 + rect.height / 2;
+                    document.documentElement.scrollTop = targetScrollTop;
+                    document.body.scrollTop = targetScrollTop;
+                }
+
+                const r = targetEl ? targetEl.getBoundingClientRect() : null;
+
+                if (r) _updateLayout(r);
+                else   _fullBackdrop();
+
+                _placeTooltip(r, step.pos);
+
+                // Reveal after layout is committed
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        _tooltip.style.opacity = '';
+                        _tooltip.classList.add('is-visible');
+                    });
+                });
+            }
+
+            function _goTo(i) {
+                _step = i;
+                _prepareStep(i);
+                _render(i);
+            }
+
+            // ── Public ────────────────────────────────────────────────
+            function start() {
+                if (_active) return;
+                _active = true;
+                _step   = 0;
+                _plainValue  = document.getElementById('enc-plain').value;
+                _saltValue   = document.getElementById('enc-salt').value;
+                _scrollY     = window.scrollY;
+                _resultText  = document.querySelector('.result-box span').textContent;
+                _strengthW   = document.getElementById('strength-bar-fill').style.width;
+                _strengthBg  = document.getElementById('strength-bar-fill').style.background;
+                _strengthLbl = document.getElementById('strength-bar-label').textContent;
+                StorageManager.pause();
+
+                // Reset form to initial state for the tour
+                // Clear rules
+                RuleBuilder.restore([]);
+                // Clear inputs
+                document.getElementById('enc-plain').value = '';
+                document.getElementById('enc-salt').value  = '';
+                // Reset length to 8
+                const lenInp = document.getElementById('enc-length');
+                lenInp.value = '8';
+                lenInp.dispatchEvent(new Event('input'));
+                // Select all symbols
+                document.querySelectorAll('.symbol-chip input[type="checkbox"]').forEach(c => { c.checked = true; });
+                const sa = document.getElementById('symbol-select-all');
+                sa.checked = true;
+                sa.indeterminate = false;
+                _saveSymbols();
+                // Reset auto-fill to all checked
+                ['upper','lower','digit','symbol'].forEach(k => {
+                    document.getElementById('auto-' + k).checked = true;
+                });
+                // Clear result
+                document.querySelector('.result-box span').textContent = '';
+
+                // Scroll to top first, then lock scroll and render
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                document.documentElement.classList.add('tour-active');
+                _backdrop.style.display = 'block';
+                _ring.style.display     = 'block';
+                _tooltip.style.display  = 'block';
+                _goTo(0);
+            }
+
+            function _end() {
+                _active = false;
+                StorageManager.resume();
+                document.documentElement.classList.remove('tour-active');
+                _backdrop.style.display = 'none';
+                _ring.style.display     = 'none';
+                _tooltip.style.display  = 'none';
+                _tooltip.classList.remove('is-visible');
+                document.getElementById('cipher-picker-modal').classList.remove('is-visible');
+                _restoreFromStorage();
+            }
+
+            _nextBtn.addEventListener('click', () => {
+                if (_step < STEPS.length - 1) _goTo(_step + 1);
+                else _end();
+            });
+            _skipBtn.addEventListener('click', _end);
+
+            window.addEventListener('resize', () => {
+                if (!_active) return;
+                _render(_step);
+            });
+
+            document.getElementById('tour-btn').addEventListener('click', start);
+
+            return { start };
+        })();
+        // ────────────────────────────────────────────────────────────
 
         // ── Export / Import Rules ────────────────────────────────────
         (() => {
