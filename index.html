@@ -3315,6 +3315,7 @@
                         const tag = document.createElement('span');
                         tag.className = 'result-hint-tag';
                         tag.textContent = i18n.t(labelKey);
+                        tag.dataset.i18nKey = labelKey;
                         hintsEl.appendChild(tag);
                     }
                 });
@@ -3358,6 +3359,12 @@
                 // Re-translate all visible input error messages
                 document.querySelectorAll('.input-error-msg').forEach(el => {
                     if (el.style.display !== 'none' && el.dataset.i18nKey) {
+                        el.textContent = i18n.t(el.dataset.i18nKey);
+                    }
+                });
+                // Re-translate result hint tags
+                document.querySelectorAll('#result-hints .result-hint-tag').forEach(el => {
+                    if (el.dataset.i18nKey) {
                         el.textContent = i18n.t(el.dataset.i18nKey);
                     }
                 });
