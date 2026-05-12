@@ -9,6 +9,7 @@
 ## 功能概覽
 
 - 支援七種古典加密規則，可自由新增、排序與組合，依序套用
+- **支援最多 5 組獨立設定（Set），可自由命名並一鍵切換**
 - 所有運算在瀏覽器本地執行，不傳輸任何資料
 - 偏好設定（規則參數、符號選項、密碼長度等）自動儲存至 `localStorage`
 - 純靜態頁面，無後端伺服器，可直接以檔案開啟或部署至靜態主機
@@ -76,13 +77,15 @@
 
 | 路徑 | 內容 |
 |------|------|
-| `prefs.symbols` | 已勾選的特殊符號清單 |
-| `prefs.length` | 密碼長度 |
+| `prefs.sets` | 所有設定組（規則、符號、長度、自動補充） |
+| `prefs.activeSet` | 當前使用的設定組索引 |
+| `prefs.symbols` | 已勾選的特殊符號清單（相容舊版） |
+| `prefs.length` | 密碼長度（相容舊版） |
 | `prefs.showPassword` | 明文密碼顯示狀態 |
-| `prefs.autoFill` | 自動補充字元各項開關 |
+| `prefs.autoFill` | 自動補充字元各項開關（相容舊版） |
 | `prefs.lang` | 介面語言 |
 | `prefs.darkMode` | 暗色模式狀態 |
-| `prefs.ruleList` | 規則列表（類型與參數） |
+| `prefs.ruleList` | 規則列表（相容舊版，1.6.0 起由 sets 取代） |
 | `flags.firstUseSeen` | 是否已看過首次使用說明 |
 
 如需清除，請透過瀏覽器的「清除網站資料」功能。
@@ -118,6 +121,7 @@
 |------|------|
 | `i18n` | 多語系翻譯與套用 |
 | `StorageManager` | localStorage 讀寫與資料持久化 |
+| `SetManager` | 多組設定管理（切換、新增、刪除、命名） |
 | `FirstUseNotice` | 首次使用說明彈窗 |
 | `DarkMode` | 暗色模式切換 |
 | `PasswordVisibility` | 明文密碼顯示/隱藏切換 |
@@ -160,4 +164,4 @@
 
 ## 授權
 
-© 2026 ccec1t91077 — v1.5.0
+© 2026 ccec1t91077 — v1.6.0
