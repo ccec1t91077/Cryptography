@@ -9,6 +9,7 @@ Encrypt a plain-text password using classical cipher algorithms to generate a re
 ## Features
 
 - Supports seven classical cipher rules, freely addable, reorderable, and combinable, applied in sequence
+- **Supports up to 5 independent setting sets, each with a custom name — switch between them with one click**
 - All operations run locally in the browser — no data is transmitted
 - Preferences (rule parameters, symbol options, password length, etc.) are automatically saved to `localStorage`
 - Fully static page with no backend — open directly as a file or deploy to any static host
@@ -76,13 +77,15 @@ Preferences are stored in `localStorage` with a key derived from a hash of the c
 
 | Path | Content |
 |------|---------|
-| `prefs.symbols` | Selected special characters |
-| `prefs.length` | Password length |
+| `prefs.sets` | All setting sets (rules, symbols, length, auto-fill) |
+| `prefs.activeSet` | Index of the currently active set |
+| `prefs.symbols` | Selected special characters (legacy compatibility) |
+| `prefs.length` | Password length (legacy compatibility) |
 | `prefs.showPassword` | Password visibility state |
-| `prefs.autoFill` | Auto-fill toggles |
+| `prefs.autoFill` | Auto-fill toggles (legacy compatibility) |
 | `prefs.lang` | Interface language |
 | `prefs.darkMode` | Dark mode state |
-| `prefs.ruleList` | Rule list (type and parameters) |
+| `prefs.ruleList` | Rule list (legacy, replaced by sets in v1.6.0) |
 | `flags.firstUseSeen` | Whether the first-use notice has been seen |
 
 To clear, use your browser's "Clear site data" feature.
@@ -118,6 +121,7 @@ Modular design (IIFE pattern):
 |--------|----------------|
 | `i18n` | Multi-language translation and application |
 | `StorageManager` | localStorage read/write and persistence |
+| `SetManager` | Multi-set management (switch, add, remove, rename) |
 | `FirstUseNotice` | First-use notice modal |
 | `DarkMode` | Dark mode toggle |
 | `PasswordVisibility` | Password show/hide toggle |
@@ -160,4 +164,4 @@ This tool is designed to **convert a memorable plain-text password into a hard-t
 
 ## License
 
-© 2026 ccec1t91077 — v1.5.0
+© 2026 ccec1t91077 — v1.6.0
